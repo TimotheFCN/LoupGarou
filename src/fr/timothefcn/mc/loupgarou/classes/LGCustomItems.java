@@ -28,7 +28,7 @@ public class LGCustomItems {
                 for (Object key2 : array.keySet())
                     map.put((String) key2, Material.valueOf((String) array.get(key2)));
                 try {
-                    LGCustomItems.mappings.put((Class<? extends Role>) Class.forName("fr.timothefocone.com.loupgarou.roles.R" + key), map);
+                    LGCustomItems.mappings.put((Class<? extends Role>) Class.forName("fr.timothefcn.mc.loupgarou.roles.R" + key), map);
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }

@@ -5,6 +5,7 @@ import fr.timothefcn.mc.loupgarou.classes.*;
 import fr.timothefcn.mc.loupgarou.classes.chat.LGChat;
 import fr.timothefcn.mc.loupgarou.events.*;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 
@@ -79,7 +80,7 @@ public class RLoupGarou extends Role {
     }
 
     public void onNightTurn(Runnable callback) {
-        vote = new LGVote(getTimeout(), getTimeout() / 3, getGame(), false, false, (player, secondsLeft) -> {
+        vote = new LGVote(30, 10, getGame(), false, false, (player, secondsLeft) -> {
             return !getPlayers().contains(player) ? "§6C'est au tour " + getFriendlyName() + " §6(§e" + secondsLeft + " s§6)" : player.getCache().has("vote") ? "§l§9Vous votez contre §c§l" + player.getCache().<LGPlayer>get("vote").getName() : "§6Il vous reste §e" + secondsLeft + " seconde" + (secondsLeft > 1 ? "s" : "") + "§6 pour voter";
         });
         for (LGPlayer lgp : getGame().getAlive())

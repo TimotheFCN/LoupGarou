@@ -13,6 +13,7 @@ import net.minecraft.server.v1_15_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
@@ -23,10 +24,10 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class LGVote {
-    private static final EntityArmorStand eas = new EntityArmorStand(null, 0, 0, 0);
     private static DataWatcherObject<Optional<IChatBaseComponent>> az;
     private static DataWatcherObject<Boolean> aA;
     private static DataWatcherObject<Byte> T;
+    private static final EntityArmorStand eas = new EntityArmorStand(((CraftWorld)Bukkit.getWorlds().get(0)).getHandle(), 0, 0, 0);
 
     static {
         try {

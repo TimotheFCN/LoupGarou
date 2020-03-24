@@ -789,7 +789,7 @@ public class LGGame implements Listener {
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
             broadcastMessage("§9Il est temps de voter pour élire un §5§lCapitaine§9.");
-            vote = new LGVote(180, 20, this, true, true, (player, secondsLeft) -> {
+            vote = new LGVote( 180, 20, this, true, true, (player, secondsLeft) -> {
                 return player.getCache().has("vote") ? "§6Tu votes pour §7§l" + player.getCache().<LGPlayer>get("vote").getName() : "§6Il te reste §e" + secondsLeft + " seconde" + (secondsLeft > 1 ? "s" : "") + "§6 pour voter";
             });
             vote.start(getAlive(), getInGame(), () -> {
