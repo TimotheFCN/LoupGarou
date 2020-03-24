@@ -76,6 +76,7 @@ public class MainLg extends JavaPlugin {
         for (Player player : Bukkit.getOnlinePlayers())
             Bukkit.getPluginManager().callEvent(new PlayerJoinEvent(player, "is connected"));
 
+        //
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
         protocolManager.addPacketListener(new PacketAdapter(this, ListenerPriority.NORMAL, PacketType.Play.Server.UPDATE_TIME) {
                                               @Override
