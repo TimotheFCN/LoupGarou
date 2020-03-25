@@ -121,11 +121,11 @@ public class RCupidon extends Role {
     protected void setInLove(LGPlayer player1, LGPlayer player2) {
         player1.getCache().set("inlove", player2);
         player1.sendMessage("§9Tu tombes amoureux de §7§l" + player2.getName() + "§9, il est " + player2.getRole().getName());
-        player1.sendMessage("§9§oTu peux lui parler en mettant un §e!§9 devant ton message.");
+        player1.sendMessage("§9§oTu peux lui parler en utilisant /tinder devant ton message.");
 
         player2.getCache().set("inlove", player1);
         player2.sendMessage("§9Tu tombes amoureux de §7§l" + player1.getName() + "§9, il est " + player1.getRole().getName());
-        player2.sendMessage("§9§oTu peux lui parler en mettant un §e!§9 devant ton message.");
+        player1.sendMessage("§9§oTu peux lui parler en utilisant /tinder devant ton message.");
 
 	/*	sendHead(player1, player2);
 		sendHead(player2, player1);*/
@@ -253,7 +253,7 @@ public class RCupidon extends Role {
     public void onChat(AsyncPlayerChatEvent e) {
         LGPlayer player = LGPlayer.thePlayer(e.getPlayer());
         if (player.getGame() == getGame()) {
-            if (e.getMessage().startsWith("!") && player.getCache().has("inlove")) {
+            if (e.getMessage().startsWith("/tinder ") && player.getCache().has("inlove")) {
                 player.sendMessage("§d\u2764 " + player.getName() + " §6» §f" + e.getMessage().substring(1));
                 player.getCache().<LGPlayer>get("inlove").sendMessage("§d\u2764 " + player.getName() + " §6» §f" + e.getMessage().substring(1));
                 e.setCancelled(true);
