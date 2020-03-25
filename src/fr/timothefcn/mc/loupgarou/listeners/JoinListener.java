@@ -43,7 +43,9 @@ public class JoinListener implements Listener {
                 team.sendPacket(p);
                 myTeam.sendPacket(player);
             }
-        p.setFoodLevel(6);
+        p.setFoodLevel(20);
+        p.setHealth(20);
+
         if (e.getJoinMessage() == null || !e.getJoinMessage().equals("joinall"))
             p.getPlayer().setResourcePack("http://leomelki.fr/mcgames/ressourcepacks/v29/loup_garou.zip");
         else {
