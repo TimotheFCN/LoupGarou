@@ -5,7 +5,6 @@ import fr.timothefcn.mc.loupgarou.classes.LGCustomItems;
 import fr.timothefcn.mc.loupgarou.classes.LGGame;
 import fr.timothefcn.mc.loupgarou.classes.LGPlayer;
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
@@ -15,9 +14,9 @@ import java.util.ArrayList;
 public abstract class Role implements Listener {
     @Getter
     private final LGGame game;
-    @Getter
+  /*  @Getter
     @Setter
-    private int waitedPlayers;
+    private int waitedPlayers; */
     @Getter
     private ArrayList<LGPlayer> players = new ArrayList<LGPlayer>();
 
@@ -26,8 +25,6 @@ public abstract class Role implements Listener {
         Bukkit.getPluginManager().registerEvents(this, MainLg.getInstance());
         FileConfiguration config = MainLg.getInstance().getConfig();
         String roleConfigName = "role." + getClass().getSimpleName().substring(1);
-        if (config.contains(roleConfigName))
-            waitedPlayers = config.getInt(roleConfigName);
     }
 
 
@@ -99,7 +96,7 @@ public abstract class Role implements Listener {
         players.add(player);
         if (player.getRole() == null)
             player.setRole(this);
-        waitedPlayers--;
+    //    waitedPlayers--;
         if (sendMessage) {
             player.sendTitle("§6Tu es " + getName(), "§e" + getShortDescription(), 200);
             player.sendMessage("§6Tu es " + getName() + "§6.");

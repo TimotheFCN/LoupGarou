@@ -13,6 +13,7 @@ import fr.timothefcn.mc.loupgarou.events.LGPlayerKilledEvent.Reason;
 import fr.timothefcn.mc.loupgarou.roles.*;
 import fr.timothefcn.mc.loupgarou.scoreboard.CustomScoreboard;
 import fr.timothefcn.mc.loupgarou.utils.MultipleValueMap;
+import fr.timothefcn.mc.loupgarou.utils.PlayerUtils;
 import fr.timothefcn.mc.loupgarou.utils.VariousUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,13 +26,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.lang.reflect.Constructor;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -46,7 +47,7 @@ public class LGGame implements Listener {
     @Getter
     private final SecureRandom random = new SecureRandom();
     @Getter
-    private final int maxPlayers;
+    private int maxPlayers;
     @Getter
     public long time = 0;
     @Setter
@@ -83,10 +84,18 @@ public class LGGame implements Listener {
     private LGPlayer mayor;
     @Getter
     private LGVote vote;
+    @Getter
+    private Player owner;
 
-    public LGGame(int maxPlayers) {
+
+    public LGGame(Player owner, int maxPlayers) {
+        this.owner = owner;
         this.maxPlayers = maxPlayers;
         Bukkit.getPluginManager().registerEvents(this, MainLg.getInstance());
+    }
+
+    public void setRoles(ArrayList<Role> roleSelection) {
+        this.roles = roleSelection;
     }
 
     public void sendActionBarMessage(String msg) {
@@ -183,6 +192,7 @@ public class LGGame implements Listener {
     public boolean tryToJoin(LGPlayer lgp) {
         if (ended) return false;
         if (!started && inGame.size() < maxPlayers) {//Si la partie n'a pas démarrée et qu'il reste de la place
+            PlayerUtils.sendRessourcePack(lgp.getPlayer());
             lgp.getPlayer().removePotionEffect(PotionEffectType.INVISIBILITY);
             VariousUtils.setWarning(lgp.getPlayer(), false);
             if (lgp.isMuted())
@@ -199,15 +209,11 @@ public class LGGame implements Listener {
 
             lgp.setScoreboard(null);
 
+            for(Player online : Bukkit.getOnlinePlayers())
+                PlayerUtils.updatePlayerHide(online);
+
             for (LGPlayer other : getInGame()) {
                 other.updatePrefix();
-                if (lgp != other) {
-                    lgp.getPlayer().hidePlayer(other.getPlayer());
-                    lgp.getPlayer().showPlayer(other.getPlayer());
-
-                    other.getPlayer().hidePlayer(lgp.getPlayer());
-                    other.getPlayer().showPlayer(lgp.getPlayer());
-                }
             }
 
             lgp.getPlayer().setGameMode(GameMode.ADVENTURE);
@@ -219,10 +225,7 @@ public class LGGame implements Listener {
             obj.setMode(1);
             obj.sendPacket(lgp.getPlayer());
 
-            Bukkit.getPluginManager().callEvent(new LGGameJoinEvent(this, lgp));
-            //AutoStart
-            if (autoStart)
-                updateStart();
+          //  Bukkit.getPluginManager().callEvent(new LGGameJoinEvent(this, lgp));
             return true;
         }
         return false;
@@ -268,7 +271,7 @@ public class LGGame implements Listener {
             startingTask.cancel();
             startingTask = null;
         }
-        MainLg.getInstance().loadConfig();
+    //    MainLg.getInstance().loadConfig();
         started = true;
         MainLg main = MainLg.getInstance();
 
@@ -284,21 +287,22 @@ public class LGGame implements Listener {
             placements.put(lgp.getPlace(), lgp);
             p.teleport(new Location(p.getWorld(), location.get(0) + 0.5, location.get(1), location.get(2) + 0.5, location.get(3).floatValue(), location.get(4).floatValue()));
             WrapperPlayServerUpdateHealth update = new WrapperPlayServerUpdateHealth();
-            update.setFood(6);
+            update.setFood(20);
             update.setFoodSaturation(1);
             update.setHealth(20);
             update.sendPacket(p);
             lgp.getScoreboard().getLine(0).setDisplayName("§6Attribution des rôles...");
         }
 
-        try {
+        //TODO: ne plus choisir les roles en fonction de la config
+  /*      try {
             for (Entry<String, Constructor<? extends Role>> role : main.getRoles().entrySet())
                 if (main.getConfig().getInt("role." + role.getKey()) > 0)
                     roles.add(role.getValue().newInstance(this));
         } catch (Exception err) {
             Bukkit.broadcastMessage("§4§lUne erreur est survenue lors de la création des roles... Regardez la console !");
             err.printStackTrace();
-        }
+        }*/
 
         new BukkitRunnable() {
             int timeLeft = 5 * 2;
@@ -338,18 +342,27 @@ public class LGGame implements Listener {
         //Give roles...
         ArrayList<LGPlayer> toGive = (ArrayList<LGPlayer>) inGame.clone();
         started = false;
-        for (Role role : getRoles())
-            while (role.getWaitedPlayers() > 0) {
+        System.out.println("Roles à attribuer: " + getRoles().toString());
+        for (Role role : getRoles()) {
+            int waitedPlayers = 0;
+            for (int i = 0; i<getRoles().size(); i++) {
+                if (getRoles().get(i).getName().equalsIgnoreCase(role.getName())) waitedPlayers++;
+            }
+            System.out.println("Roles à attribuer: " + waitedPlayers);
+          //  System.out.println("Role à attribué:" + role);
+            while (waitedPlayers > 0) {
                 int randomized = random.nextInt(toGive.size());
                 LGPlayer player = toGive.remove(randomized);
-
+                waitedPlayers--;
                 role.join(player);
+             //   System.out.println("Role attribué à:" + player);
                 WrapperPlayServerUpdateHealth update = new WrapperPlayServerUpdateHealth();
-                update.setFood(6);
+                update.setFood(20);
                 update.setFoodSaturation(1);
                 update.setHealth(20);
                 update.sendPacket(player.getPlayer());
             }
+        }
         started = true;
 
         updateRoleScoreboard();
@@ -600,9 +613,10 @@ public class LGGame implements Listener {
 
 
             Player p = lgp.getPlayer();
-            lgp.showView();
-            p.removePotionEffect(PotionEffectType.JUMP);
-            p.setWalkSpeed(0.2f);
+            lgp.showView(); //TODO: Êviter doublon
+            PlayerUtils.resetPlayerState(p);
+            PlayerUtils.updatePlayerHide(p);
+            PlayerUtils.resetRessourcePack(p);
         }
 
         for (LGPlayer lgp : getInGame())
@@ -612,9 +626,7 @@ public class LGGame implements Listener {
                 team.setMode(1);
                 team.setName("you_are");
                 team.sendPacket(lgp.getPlayer());
-                LGPlayer.thePlayer(lgp.getPlayer()).join(MainLg.getInstance().getCurrentGame());
             }
-        //A remettre pour activer le démarrage automatique
 	/*	wait(30, ()->{
 			for(LGPlayer lgp : getInGame())
 				if(lgp.getPlayer().isOnline()) {
@@ -627,6 +639,9 @@ public class LGGame implements Listener {
 		}, (player, secondsLeft)->{
 			return "§6Démarrage d'une nouvelle partie dans §e"+secondsLeft+" seconde"+(secondsLeft > 1 ? "s" : "");
 		});*/
+        MainLg.getInstance().getAllGames().inverse().remove(this);
+        for(LGPlayer lgp : getInGame())
+        Bukkit.getPluginManager().callEvent(new PlayerQuitEvent(lgp.getPlayer(), ""));
     }
 
     public boolean mayorKilled() {

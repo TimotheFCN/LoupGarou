@@ -6,3 +6,5 @@ depend: [ProtocolLib]
 api-version: 1.13
 commands:
   lg:
+  create:
+  join:

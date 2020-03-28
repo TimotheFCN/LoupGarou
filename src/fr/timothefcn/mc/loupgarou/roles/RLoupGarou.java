@@ -5,7 +5,6 @@ import fr.timothefcn.mc.loupgarou.classes.*;
 import fr.timothefcn.mc.loupgarou.classes.chat.LGChat;
 import fr.timothefcn.mc.loupgarou.events.*;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 

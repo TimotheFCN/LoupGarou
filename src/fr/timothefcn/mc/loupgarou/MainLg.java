@@ -10,6 +10,8 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import fr.timothefcn.mc.com.comphenix.packetwrapper.*;
 import fr.timothefcn.mc.loupgarou.classes.LGGame;
 import fr.timothefcn.mc.loupgarou.classes.LGPlayer;
@@ -40,6 +42,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import static fr.timothefcn.mc.loupgarou.classes.LGPlayer.thePlayer;
+
 public class MainLg extends JavaPlugin {
     private static MainLg instance;
     @Getter
@@ -49,6 +53,11 @@ public class MainLg extends JavaPlugin {
     @Getter
     @Setter
     private LGGame currentGame;//Because for now, only one game will be playable on one server (flemme)
+    @Getter
+    private BiMap<String, LGGame> allGames = HashBiMap.create();
+    //TODO: chaque partie créée doit entrer ici, chaque partie terminée doit être supprimée
+    @Getter
+    private ArrayList<String> badGuys = new ArrayList<>();
 
     public static MainLg getInstance() {
         return instance;
@@ -58,15 +67,17 @@ public class MainLg extends JavaPlugin {
     public void onEnable() {
         instance = this;
         loadRoles();
+        setBadGuys();
         if (!new File(getDataFolder(), "config.yml").exists()) {//Créer la config
             FileConfiguration config = getConfig();
             config.set("spawns", new ArrayList<List<Double>>());
-            for (String role : roles.keySet())//Nombre de participant pour chaque rôle
-                config.set("role." + role, 1);
+            config.set("ressourcePack", "http://leomelki.fr/mcgames/ressourcepacks/v32/loup_garou.zip");
             saveConfig();
         }
-        loadConfig();
-        Bukkit.getConsoleSender().sendMessage("/");
+       // loadConfig();
+        Bukkit.getConsoleSender().sendMessage("LG by Timothé");
+        getCommand("create").setExecutor(new LgCommands());
+        getCommand("join").setExecutor(new LgCommands());
         Bukkit.getPluginManager().registerEvents(new JoinListener(), this);
         Bukkit.getPluginManager().registerEvents(new CancelListener(), this);
         Bukkit.getPluginManager().registerEvents(new VoteListener(), this);
@@ -81,7 +92,7 @@ public class MainLg extends JavaPlugin {
                                               @Override
                                               public void onPacketSending(PacketEvent event) {
                                                   WrapperPlayServerUpdateTime time = new WrapperPlayServerUpdateTime(event.getPacket());
-                                                  LGPlayer lgp = LGPlayer.thePlayer(event.getPlayer());
+                                                  LGPlayer lgp = thePlayer(event.getPlayer());
                                                   if (lgp.getGame() != null && lgp.getGame().getTime() != time.getTimeOfDay())
                                                       event.setCancelled(true);
                                               }
@@ -100,11 +111,11 @@ public class MainLg extends JavaPlugin {
         protocolManager.addPacketListener(new PacketAdapter(this, ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO) {
             @Override
             public void onPacketSending(PacketEvent event) {
-                LGPlayer player = LGPlayer.thePlayer(event.getPlayer());
+                LGPlayer player = thePlayer(event.getPlayer());
                 WrapperPlayServerPlayerInfo info = new WrapperPlayServerPlayerInfo(event.getPacket());
                 ArrayList<PlayerInfoData> datas = new ArrayList<PlayerInfoData>();
                 for (PlayerInfoData data : info.getData()) {
-                    LGPlayer lgp = LGPlayer.thePlayer(Bukkit.getPlayer(data.getProfile().getUUID()));
+                    LGPlayer lgp = thePlayer(Bukkit.getPlayer(data.getProfile().getUUID()));
                     if (player.getGame() != null && player.getGame() == lgp.getGame()) {
                         LGUpdatePrefixEvent evt2 = new LGUpdatePrefixEvent(player.getGame(), lgp, player, "");
                         WrappedChatComponent displayName = data.getDisplayName();
@@ -132,7 +143,7 @@ public class MainLg extends JavaPlugin {
         protocolManager.addPacketListener(new PacketAdapter(this, ListenerPriority.NORMAL, PacketType.Play.Server.UPDATE_HEALTH) {
             @Override
             public void onPacketSending(PacketEvent event) {
-                LGPlayer player = LGPlayer.thePlayer(event.getPlayer());
+                LGPlayer player = thePlayer(event.getPlayer());
                 if (player.getGame() != null && player.getGame().isStarted()) {
                     WrapperPlayServerUpdateHealth health = new WrapperPlayServerUpdateHealth(event.getPacket());
                     health.setFood(6);
@@ -142,12 +153,12 @@ public class MainLg extends JavaPlugin {
         protocolManager.addPacketListener(new PacketAdapter(this, ListenerPriority.NORMAL, PacketType.Play.Server.SCOREBOARD_TEAM) {
             @Override
             public void onPacketSending(PacketEvent event) {
-                LGPlayer player = LGPlayer.thePlayer(event.getPlayer());
+                LGPlayer player = thePlayer(event.getPlayer());
                 WrapperPlayServerScoreboardTeam team = new WrapperPlayServerScoreboardTeam(event.getPacket());
                 team.setColor(ChatColor.WHITE);
                 Player other = Bukkit.getPlayer(team.getName());
                 if (other == null) return;
-                LGPlayer lgp = LGPlayer.thePlayer(other);
+                LGPlayer lgp = thePlayer(other);
                 if (player.getGame() != null && player.getGame() == lgp.getGame()) {
                     LGUpdatePrefixEvent evt2 = new LGUpdatePrefixEvent(player.getGame(), lgp, player, "");
                     Bukkit.getPluginManager().callEvent(evt2);
@@ -161,7 +172,7 @@ public class MainLg extends JavaPlugin {
         protocolManager.addPacketListener(new PacketAdapter(this, ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_EQUIPMENT) {
             @Override
             public void onPacketSending(PacketEvent event) {
-                LGPlayer player = LGPlayer.thePlayer(event.getPlayer());
+                LGPlayer player = thePlayer(event.getPlayer());
                 if (player.getGame() != null) {
                     WrapperPlayServerEntityEquipment equip = new WrapperPlayServerEntityEquipment(event.getPacket());
                     if (equip.getSlot() == ItemSlot.OFFHAND && equip.getEntityID() != player.getPlayer().getEntityId())
@@ -187,7 +198,7 @@ public class MainLg extends JavaPlugin {
                     List<Object> list = (List<Object>) getConfig().getList("spawns");
                     list.add(Arrays.asList((double) loc.getBlockX(), loc.getY(), (double) loc.getBlockZ(), (double) loc.getYaw(), (double) loc.getPitch()));
                     saveConfig();
-                    loadConfig();
+                 //   loadConfig();
                     sender.sendMessage(prefix + "§aLa position a bien été ajoutée !");
                     return true;
                 } else if (args[0].equalsIgnoreCase("end")) {
@@ -200,7 +211,7 @@ public class MainLg extends JavaPlugin {
                         sender.sendMessage("§4Erreur : §cLe joueur §4" + args[1] + "§c n'est pas connecté.");
                         return true;
                     }
-                    LGGame game = LGPlayer.thePlayer(selected).getGame();
+                    LGGame game = thePlayer(selected).getGame();
                     if (game == null) {
                         sender.sendMessage("§4Erreur : §cLe joueur §4" + selected.getName() + "§c n'est pas dans une partie.");
                         return true;
@@ -219,7 +230,7 @@ public class MainLg extends JavaPlugin {
                         sender.sendMessage("§4Erreur : §cLe joueur §4" + args[1] + "§c n'existe pas !");
                         return true;
                     }
-                    LGPlayer lgp = LGPlayer.thePlayer(player);
+                    LGPlayer lgp = thePlayer(player);
                     if (lgp.getGame() == null) {
                         sender.sendMessage("§4Erreur : §cLe joueur §4" + lgp.getName() + "§c n'est pas dans une partie.");
                         return true;
@@ -235,8 +246,9 @@ public class MainLg extends JavaPlugin {
                 } else if (args[0].equalsIgnoreCase("reloadconfig")) {
                     sender.sendMessage("§aVous avez bien reload la config !");
                     sender.sendMessage("§7§oSi vous avez changé les rôles, écriver §8§o/lg joinall§7§o !");
-                    loadConfig();
+                 //   loadConfig();
                     return true;
+    //TODO: Désactiver cette commande
                 } else if (args[0].equalsIgnoreCase("joinall")) {
                     for (Player p : Bukkit.getOnlinePlayers())
                         Bukkit.getPluginManager().callEvent(new PlayerQuitEvent(p, "joinall"));
@@ -251,22 +263,24 @@ public class MainLg extends JavaPlugin {
                     return true;
                 } else if (args[0].equalsIgnoreCase("nextNight")) {
                     sender.sendMessage("§aVous êtes passé à la prochaine nuit");
-                    if (getCurrentGame() != null) {
-                        getCurrentGame().broadcastMessage("§2§lLe passage à la prochaine nuit a été forcé !");
-                        for (LGPlayer lgp : getCurrentGame().getInGame())
+                    if (sender instanceof Player && thePlayer((Player) sender).getGame() != null) {
+                        LGGame playergame = LGPlayer.thePlayer((Player) sender).getGame();
+                        playergame.broadcastMessage("§2§lLe passage à la prochaine nuit a été forcé !");
+                        for (LGPlayer lgp : playergame.getInGame())
                             lgp.stopChoosing();
-                        getCurrentGame().cancelWait();
-                        getCurrentGame().nextNight();
+                        playergame.cancelWait();
+                        playergame.nextNight();
                     }
                     return true;
                 } else if (args[0].equalsIgnoreCase("nextDay")) {
                     sender.sendMessage("§aVous êtes passé à la prochaine journée");
-                    if (getCurrentGame() != null) {
-                        getCurrentGame().broadcastMessage("§2§lLe passage à la prochaine journée a été forcé !");
-                        getCurrentGame().cancelWait();
-                        for (LGPlayer lgp : getCurrentGame().getInGame())
+                    if (sender instanceof Player && thePlayer((Player) sender).getGame() != null) {
+                        LGGame playergame = LGPlayer.thePlayer((Player) sender).getGame();
+                        playergame.broadcastMessage("§2§lLe passage à la prochaine journée a été forcé !");
+                        playergame.cancelWait();
+                        for (LGPlayer lgp : playergame.getInGame())
                             lgp.stopChoosing();
-                        getCurrentGame().endNight();
+                        playergame.endNight();
                     }
                     return true;
                 } else if (args[0].equalsIgnoreCase("roles")) {
@@ -307,7 +321,7 @@ public class MainLg extends JavaPlugin {
                                         MainLg.getInstance().getConfig().set("role." + real_role, Integer.valueOf(args[3]));
                                         sender.sendMessage(prefix + "§6Il y aura §e" + args[3] + " §6" + real_role);
                                         saveConfig();
-                                        loadConfig();
+                                    //    loadConfig();
                                         sender.sendMessage("§7§oSi vous avez fini de changer les rôles, écriver §8§o/lg joinall§7§o !");
                                     } catch (Exception err) {
                                         sender.sendMessage(prefix + "§4Erreur: §c" + args[3] + " n'est pas un nombre");
@@ -360,13 +374,13 @@ public class MainLg extends JavaPlugin {
                 returnlist.add(s);
         return returnlist;
     }
-
-    public void loadConfig() {
+    //TODO: Config désactivée
+ /*   public void loadConfig() {
         int players = 0;
         for (String role : roles.keySet())
             players += getConfig().getInt("role." + role);
         currentGame = new LGGame(players);
-    }
+    } */
 
     @Override
     public void onDisable() {
@@ -404,5 +418,14 @@ public class MainLg extends JavaPlugin {
         } catch (NoSuchMethodException | SecurityException e) {
             e.printStackTrace();
         }
+
+    }
+    private void setBadGuys() {
+        badGuys.add(("LoupGarou"));
+        badGuys.add(("LoupGarouNoir"));
+        badGuys.add(("LoupGarouBlanc"));
+        badGuys.add(("GrandMechantLoup"));
+        badGuys.add(("ChienLoup")); //TODO: implémenter ça correctement
+        badGuys.add(("EnfantSauvage")); //TODO: implémenter ça correctement
     }
 }
