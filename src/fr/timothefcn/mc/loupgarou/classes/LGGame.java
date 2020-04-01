@@ -42,16 +42,19 @@ import java.util.Map.Entry;
 
 public class LGGame implements Listener {
     private static boolean autoStart = false;
-
-
     @Getter
     private final SecureRandom random = new SecureRandom();
     @Getter
     public long time = 0;
+    @Getter
+    public ArrayList<String> rolestoconfig = new ArrayList<>();
     @Setter
     boolean ended;
     boolean isPeopleVote = false;
     @Getter
+    private String gameName;
+    @Getter
+    @Setter
     private int maxPlayers;
     @Getter
     private ArrayList<LGPlayer> inGame = new ArrayList<>();
@@ -82,11 +85,18 @@ public class LGGame implements Listener {
     private LGVote vote;
     @Getter
     private Player owner;
+    @Getter
+    @Setter
+    private int villagers;
+    @Getter
+    @Setter
+    private int wolves;
 
 
-    public LGGame(Player owner, int maxPlayers) {
+    public LGGame(Player owner, int maxPlayers, String gameName) {
         this.owner = owner;
         this.maxPlayers = maxPlayers;
+        this.gameName = gameName;
         Bukkit.getPluginManager().registerEvents(this, MainLg.getInstance());
     }
 
@@ -640,7 +650,8 @@ public class LGGame implements Listener {
 		}, (player, secondsLeft)->{
 			return "§6Démarrage d'une nouvelle partie dans §e"+secondsLeft+" seconde"+(secondsLeft > 1 ? "s" : "");
 		});*/
-        MainLg.getInstance().getAllGames().inverse().remove(this);
+
+        VariousUtils.removeGame(gameName);
         for (LGPlayer lgp : getInGame())
             Bukkit.getPluginManager().callEvent(new PlayerQuitEvent(lgp.getPlayer(), ""));
     }

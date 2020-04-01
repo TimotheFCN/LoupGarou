@@ -61,12 +61,12 @@ public class AutoRoles {
         List<Boolean> randomRoles = getRandomList(nbvillagers, 26 - main.getBadGuys().size() - nbvillagers);
         try {
             int index = 0;
-            System.out.println("Random: " + randomRoles.toString());
+            //System.out.println("Random: " + randomRoles.toString());
             for (Map.Entry<String, Constructor<? extends Role>> role : main.getRoles().entrySet()) {
                 if (main.getBadGuys().contains(role.getKey())) {
                     //      System.out.println(role.getKey() + " est mechant");
                 } else {
-                    System.out.println("BoolRole: " + randomRoles.get(index));
+                    //System.out.println("BoolRole: " + randomRoles.get(index));
                     if (randomRoles.get(index)) {
                         roleSelection.add(role.getValue().newInstance(game));
                     }

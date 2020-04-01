@@ -10,7 +10,6 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import fr.timothefcn.mc.com.comphenix.packetwrapper.*;
 import fr.timothefcn.mc.loupgarou.classes.LGGame;
@@ -54,7 +53,7 @@ public class MainLg extends JavaPlugin {
     @Setter
     private LGGame currentGame;//Because for now, only one game will be playable on one server (flemme)
     @Getter
-    private BiMap<String, LGGame> allGames = HashBiMap.create();
+    private HashBiMap<String, LGGame> allGames = HashBiMap.create();
     //TODO: chaque partie créée doit entrer ici, chaque partie terminée doit être supprimée
     @Getter
     private ArrayList<String> badGuys = new ArrayList<>();
@@ -87,6 +86,7 @@ public class MainLg extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new VoteListener(), this);
         Bukkit.getPluginManager().registerEvents(new ChatListener(), this);
         Bukkit.getPluginManager().registerEvents(new LoupGarouListener(), this);
+        Bukkit.getPluginManager().registerEvents(new RoleInterfaceListener(), this);
 
         for (Player player : Bukkit.getOnlinePlayers())
             Bukkit.getPluginManager().callEvent(new PlayerJoinEvent(player, "is connected"));

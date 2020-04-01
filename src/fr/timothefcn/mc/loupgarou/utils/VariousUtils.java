@@ -4,6 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers;
+import fr.timothefcn.mc.loupgarou.MainLg;
 import org.bukkit.Location;
 import org.bukkit.WorldBorder;
 import org.bukkit.entity.Player;
@@ -45,6 +46,10 @@ public class VariousUtils {
 
     public static char toHex(int i) {
         return hex[i];
+    }
+
+    public static void removeGame(String game) {
+        MainLg.getInstance().getAllGames().remove(game, MainLg.getInstance().getAllGames().get(game));
     }
 
 }
