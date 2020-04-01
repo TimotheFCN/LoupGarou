@@ -11,6 +11,7 @@ public class LGPlayerGotKilledEvent extends LGEvent {
     private final LGPlayer killed;
     @Getter
     private LGPlayerKilledEvent.Reason reason;
+
     public LGPlayerGotKilledEvent(LGGame game, LGPlayer killed, LGPlayerKilledEvent.Reason reason, boolean endGame) {
         super(game);
         this.killed = killed;

@@ -24,10 +24,10 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class LGVote {
+    private static final EntityArmorStand eas = new EntityArmorStand(((CraftWorld) Bukkit.getWorlds().get(0)).getHandle(), 0, 0, 0);
     private static DataWatcherObject<Optional<IChatBaseComponent>> az;
     private static DataWatcherObject<Boolean> aA;
     private static DataWatcherObject<Byte> T;
-    private static final EntityArmorStand eas = new EntityArmorStand(((CraftWorld)Bukkit.getWorlds().get(0)).getHandle(), 0, 0, 0);
 
     static {
         try {
@@ -48,7 +48,7 @@ public class LGVote {
     private final LGGame game;
     private final LGGame.TextGenerator generator;
     @Getter
-    private final HashMap<LGPlayer, List<LGPlayer>> votes = new HashMap<LGPlayer, List<LGPlayer>>();
+    private final HashMap<LGPlayer, List<LGPlayer>> votes = new HashMap<>();
     private final boolean positiveVote, randomIfEqual;
     @Getter
     LGPlayer choosen;
@@ -63,10 +63,11 @@ public class LGVote {
     private List<LGPlayer> participants, viewers;
     private int votesSize = 0;
     private LGPlayer mayor;
-    private ArrayList<LGPlayer> latestTop = new ArrayList<LGPlayer>();
+    private ArrayList<LGPlayer> latestTop = new ArrayList<>();
     @Getter
     private boolean mayorVote;
     private boolean ended;
+
     public LGVote(int timeout, int littleTimeout, LGGame game, boolean positiveVote, boolean randomIfEqual, LGGame.TextGenerator generator) {
         this.littleTimeout = littleTimeout;
         this.initialTimeout = timeout;
@@ -118,7 +119,7 @@ public class LGVote {
         if (equal)
             choosen = null;
         if (equal && mayor == null && randomIfEqual) {
-            ArrayList<LGPlayer> choosable = new ArrayList<LGPlayer>();
+            ArrayList<LGPlayer> choosable = new ArrayList<>();
             for (Entry<LGPlayer, List<LGPlayer>> entry : votes.entrySet())
                 if (entry.getValue().size() == max)
                     choosable.add(entry.getKey());
@@ -130,7 +131,7 @@ public class LGVote {
                 player.sendMessage("§9Égalité, le §5§lCapitaine§9 va départager les votes.");
             mayor.sendMessage("§6Tu dois choisir qui va mourir.");
 
-            ArrayList<LGPlayer> choosable = new ArrayList<LGPlayer>();
+            ArrayList<LGPlayer> choosable = new ArrayList<>();
             for (Entry<LGPlayer, List<LGPlayer>> entry : votes.entrySet())
                 if (entry.getValue().size() == max)
                     choosable.add(entry.getKey());
@@ -144,7 +145,7 @@ public class LGVote {
             for (int i = 0; i < choosable.size() - 1; i++)
                 sj.add(choosable.get(0).getName());
             //mayor.sendTitle("§6C'est à vous de délibérer", "Faut-il tuer "+sj+" ou "+choosable.get(choosable.size()-1).getName()+" ?", 100);
-            ArrayList<LGPlayer> blackListed = new ArrayList<LGPlayer>();
+            ArrayList<LGPlayer> blackListed = new ArrayList<>();
             for (LGPlayer player : participants)
                 if (!choosable.contains(player))
                     blackListed.add(player);

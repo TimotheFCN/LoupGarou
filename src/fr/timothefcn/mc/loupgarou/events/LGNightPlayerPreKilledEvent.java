@@ -15,6 +15,7 @@ public class LGNightPlayerPreKilledEvent extends LGEvent implements Cancellable 
     @Getter
     @Setter
     private LGPlayerKilledEvent.Reason reason;
+
     public LGNightPlayerPreKilledEvent(LGGame game, LGPlayer killed, LGPlayerKilledEvent.Reason reason) {
         super(game);
         this.killed = killed;

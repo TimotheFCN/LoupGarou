@@ -9,14 +9,14 @@ import org.bukkit.potion.PotionEffect;
 
 public class PlayerUtils {
 
-    public static  void resetPlayerState(Player p) {
+    public static void resetPlayerState(Player p) {
         p.setWalkSpeed(0.2f);
         p.setHealth(20);
         p.setFoodLevel(20);
         p.setTotalExperience(0);
         p.getInventory().clear();
         VariousUtils.setWarning(p, false);
-        for(PotionEffect effect : p.getActivePotionEffects())
+        for (PotionEffect effect : p.getActivePotionEffects())
             p.removePotionEffect(effect.getType());
     }
 
@@ -38,8 +38,10 @@ public class PlayerUtils {
     //Utiliser si joueur en partie
     private static void hideEveryone(Player p) { //Masque tout le monde sauf les joueurs dans la même partie et pas démarrée (évite de réafficher les loups la nuit par exemple)
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player != p && LGPlayer.thePlayer(player).getGame() != LGPlayer.thePlayer(p).getGame()) p.hidePlayer(player);
-            if (LGPlayer.thePlayer(player).getGame() == LGPlayer.thePlayer(p).getGame() && !LGPlayer.thePlayer(p).getGame().isStarted()) p.showPlayer(player);
+            if (player != p && LGPlayer.thePlayer(player).getGame() != LGPlayer.thePlayer(p).getGame())
+                p.hidePlayer(player);
+            if (LGPlayer.thePlayer(player).getGame() == LGPlayer.thePlayer(p).getGame() && !LGPlayer.thePlayer(p).getGame().isStarted())
+                p.showPlayer(player);
         }
 
     }
@@ -48,6 +50,7 @@ public class PlayerUtils {
         String url = MainLg.getInstance().getConfig().getString("ressourcePack");
         p.setResourcePack(url);
     }
+
     public static void resetRessourcePack(Player p) {
         p.setResourcePack("https://github.com/Phoenix616/ResourcepacksPlugins/blob/master/Empty.zip?raw=true");
     }

@@ -17,6 +17,7 @@ public class LGPlayerKilledEvent extends LGEvent implements Cancellable {
     @Getter
     @Setter
     private Reason reason;
+
     public LGPlayerKilledEvent(LGGame game, LGPlayer killed, Reason reason) {
         super(game);
         this.killed = killed;

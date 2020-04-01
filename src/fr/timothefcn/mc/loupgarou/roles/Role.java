@@ -14,11 +14,11 @@ import java.util.ArrayList;
 public abstract class Role implements Listener {
     @Getter
     private final LGGame game;
-  /*  @Getter
-    @Setter
-    private int waitedPlayers; */
+    /*  @Getter
+      @Setter
+      private int waitedPlayers; */
     @Getter
-    private ArrayList<LGPlayer> players = new ArrayList<LGPlayer>();
+    private ArrayList<LGPlayer> players = new ArrayList<>();
 
     public Role(LGGame game) {
         this.game = game;
@@ -81,9 +81,7 @@ public abstract class Role implements Listener {
                         err.printStackTrace();
                     }
                     this.run();
-                }, (currentPlayer, secondsLeft) -> {
-                    return currentPlayer == player ? "§9§lC'est à ton tour !" : "§6C'est au tour " + getFriendlyName() + " §6(§e" + secondsLeft + " s§6)";
-                });
+                }, (currentPlayer, secondsLeft) -> currentPlayer == player ? "§9§lC'est à ton tour !" : "§6C'est au tour " + getFriendlyName() + " §6(§e" + secondsLeft + " s§6)");
                 player.sendMessage("§6" + getTask());
                 //	player.sendTitle("§6C'est à vous de jouer", "§a"+getTask(), 100);
                 onNightTurn(player, this);
@@ -96,7 +94,7 @@ public abstract class Role implements Listener {
         players.add(player);
         if (player.getRole() == null)
             player.setRole(this);
-    //    waitedPlayers--;
+        //    waitedPlayers--;
         if (sendMessage) {
             player.sendTitle("§6Tu es " + getName(), "§e" + getShortDescription(), 200);
             player.sendMessage("§6Tu es " + getName() + "§6.");

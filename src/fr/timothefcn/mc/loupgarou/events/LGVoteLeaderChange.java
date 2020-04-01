@@ -13,6 +13,7 @@ public class LGVoteLeaderChange extends LGEvent {
     ArrayList<LGPlayer> latest, now;
     @Getter
     LGVote vote;
+
     public LGVoteLeaderChange(LGGame game, LGVote vote, ArrayList<LGPlayer> latest, ArrayList<LGPlayer> now) {
         super(game);
         this.latest = latest;

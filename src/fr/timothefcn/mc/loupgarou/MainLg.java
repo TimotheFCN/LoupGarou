@@ -49,7 +49,7 @@ public class MainLg extends JavaPlugin {
     @Getter
     private static String prefix = ""/*"§7[§9Loup-Garou§7] "*/;
     @Getter
-    private HashMap<String, Constructor<? extends Role>> roles = new HashMap<String, Constructor<? extends Role>>();
+    private HashMap<String, Constructor<? extends Role>> roles = new HashMap<>();
     @Getter
     @Setter
     private LGGame currentGame;//Because for now, only one game will be playable on one server (flemme)
@@ -117,7 +117,7 @@ public class MainLg extends JavaPlugin {
             public void onPacketSending(PacketEvent event) {
                 LGPlayer player = thePlayer(event.getPlayer());
                 WrapperPlayServerPlayerInfo info = new WrapperPlayServerPlayerInfo(event.getPacket());
-                ArrayList<PlayerInfoData> datas = new ArrayList<PlayerInfoData>();
+                ArrayList<PlayerInfoData> datas = new ArrayList<>();
                 for (PlayerInfoData data : info.getData()) {
                     LGPlayer lgp = thePlayer(Bukkit.getPlayer(data.getProfile().getUUID()));
                     if (player.getGame() != null && player.getGame() == lgp.getGame()) {
@@ -202,7 +202,7 @@ public class MainLg extends JavaPlugin {
                     List<Object> list = (List<Object>) getConfig().getList("spawns");
                     list.add(Arrays.asList((double) loc.getBlockX(), loc.getY(), (double) loc.getBlockZ(), (double) loc.getYaw(), (double) loc.getPitch()));
                     saveConfig();
-                 //   loadConfig();
+                    //   loadConfig();
                     sender.sendMessage(prefix + "§aLa position a bien été ajoutée !");
                     return true;
                 } else if (args[0].equalsIgnoreCase("end")) {
@@ -250,9 +250,9 @@ public class MainLg extends JavaPlugin {
                 } else if (args[0].equalsIgnoreCase("reloadconfig")) {
                     sender.sendMessage("§aVous avez bien reload la config !");
                     sender.sendMessage("§7§oSi vous avez changé les rôles, écriver §8§o/lg joinall§7§o !");
-                 //   loadConfig();
+                    //   loadConfig();
                     return true;
-    //TODO: Désactiver cette commande
+                    //TODO: Désactiver cette commande
                 } else if (args[0].equalsIgnoreCase("joinall")) {
                     for (Player p : Bukkit.getOnlinePlayers())
                         Bukkit.getPluginManager().callEvent(new PlayerQuitEvent(p, "joinall"));
@@ -325,7 +325,7 @@ public class MainLg extends JavaPlugin {
                                         MainLg.getInstance().getConfig().set("role." + real_role, Integer.valueOf(args[3]));
                                         sender.sendMessage(prefix + "§6Il y aura §e" + args[3] + " §6" + real_role);
                                         saveConfig();
-                                    //    loadConfig();
+                                        //    loadConfig();
                                         sender.sendMessage("§7§oSi vous avez fini de changer les rôles, écriver §8§o/lg joinall§7§o !");
                                     } catch (Exception err) {
                                         sender.sendMessage(prefix + "§4Erreur: §c" + args[3] + " n'est pas un nombre");
@@ -370,7 +370,7 @@ public class MainLg extends JavaPlugin {
 
     private List<String> getStartingList(String startsWith, String... list) {
         startsWith = startsWith.toLowerCase();
-        ArrayList<String> returnlist = new ArrayList<String>();
+        ArrayList<String> returnlist = new ArrayList<>();
         if (startsWith.length() == 0)
             return Arrays.asList(list);
         for (String s : list)
@@ -424,6 +424,7 @@ public class MainLg extends JavaPlugin {
         }
 
     }
+
     private void setBadGuys() {
         badGuys.add(("LoupGarou"));
         badGuys.add(("LoupGarouNoir"));

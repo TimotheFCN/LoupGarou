@@ -13,6 +13,7 @@ public class LGPyromaneGasoilEvent extends LGEvent implements Cancellable {
     @Getter
     @Setter
     private LGPlayer player;
+
     public LGPyromaneGasoilEvent(LGGame game, LGPlayer player) {
         super(game);
         this.player = player;

@@ -23,7 +23,7 @@ public class JoinListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent e) { //TODO: Possiblement à modifier
         Player p = e.getPlayer();
-        if(!(p.getGameMode().equals(GameMode.SPECTATOR))) p.setGameMode(GameMode.ADVENTURE);
+        if (!(p.getGameMode().equals(GameMode.SPECTATOR))) p.setGameMode(GameMode.ADVENTURE);
         LGPlayer.thePlayer(e.getPlayer()).setGame(null); //Au cas où un crash serveur
         PlayerUtils.resetPlayerState(p);
         WrapperPlayServerScoreboardTeam myTeam = new WrapperPlayServerScoreboardTeam();
@@ -75,7 +75,7 @@ public class JoinListener implements Listener {
             Player p = e.getPlayer();
             LGPlayer lgp = LGPlayer.thePlayer(p);
             lgp.showView();
-       //     lgp.join(MainLg.getInstance().getCurrentGame());
+            //     lgp.join(MainLg.getInstance().getCurrentGame());
         } else if (e.getStatus() == Status.DECLINED || e.getStatus() == Status.FAILED_DOWNLOAD)
             e.getPlayer().kickPlayer(MainLg.getPrefix() + "§cIl vous faut le resourcepack pour jouer ! (" + e.getStatus() + ")");
     }

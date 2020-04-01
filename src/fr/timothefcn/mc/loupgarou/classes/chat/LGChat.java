@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 @RequiredArgsConstructor
 public class LGChat {
     @Getter
-    private final HashMap<LGPlayer, LGChatCallback> viewers = new HashMap<LGPlayer, LGChatCallback>();
+    private final HashMap<LGPlayer, LGChatCallback> viewers = new HashMap<>();
     @Getter
     private final LGChatCallback defaultCallback;
 
@@ -38,5 +38,5 @@ public class LGChat {
             return null;
         }
 
-	}
+    }
 }
