@@ -192,7 +192,6 @@ public class LGGame implements Listener {
     public boolean tryToJoin(LGPlayer lgp) {
         if (ended) return false;
         if (!started && inGame.size() < maxPlayers) {//Si la partie n'a pas démarrée et qu'il reste de la place
-            PlayerUtils.sendRessourcePack(lgp.getPlayer());
             lgp.getPlayer().removePotionEffect(PotionEffectType.INVISIBILITY);
             VariousUtils.setWarning(lgp.getPlayer(), false);
             if (lgp.isMuted())
@@ -225,7 +224,17 @@ public class LGGame implements Listener {
             obj.setMode(1);
             obj.sendPacket(lgp.getPlayer());
 
-          //  Bukkit.getPluginManager().callEvent(new LGGameJoinEvent(this, lgp));
+            //Start game si full
+            if (maxPlayers == inGame.size()) {
+                if (MainLg.getInstance().getConfig().getList("spawns").size() < lgp.getGame().getMaxPlayers()) {
+                    broadcastMessage("§4Erreur : §cIl n'y a pas assez de points de spawn !");
+                    return true;
+                }
+                broadcastMessage("§aLa partie va démarrer !");
+                lgp.getGame().updateStart();
+            }
+
+            //  Bukkit.getPluginManager().callEvent(new LGGameJoinEvent(this, lgp));
             return true;
         }
         return false;
@@ -351,11 +360,11 @@ public class LGGame implements Listener {
             System.out.println("Roles à attribuer: " + waitedPlayers);
           //  System.out.println("Role à attribué:" + role);
             while (waitedPlayers > 0) {
-                int randomized = random.nextInt(toGive.size());
-                LGPlayer player = toGive.remove(randomized);
+                int randomized = random.nextInt(toGive.size() + 1);
+                LGPlayer player = toGive.remove(randomized - 1);
                 waitedPlayers--;
                 role.join(player);
-             //   System.out.println("Role attribué à:" + player);
+                //   System.out.println("Role attribué à:" + player);
                 WrapperPlayServerUpdateHealth update = new WrapperPlayServerUpdateHealth();
                 update.setFood(20);
                 update.setFoodSaturation(1);
@@ -616,7 +625,7 @@ public class LGGame implements Listener {
             lgp.showView(); //TODO: Êviter doublon
             PlayerUtils.resetPlayerState(p);
             PlayerUtils.updatePlayerHide(p);
-            PlayerUtils.resetRessourcePack(p);
+            //  PlayerUtils.resetRessourcePack(p);
         }
 
         for (LGPlayer lgp : getInGame())

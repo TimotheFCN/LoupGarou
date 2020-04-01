@@ -33,8 +33,10 @@ public class JoinListener implements Listener {
         myTeam.setMode(0);
 
         LGPlayer.thePlayer(e.getPlayer()).showView(); //TODO: Eviter le doublon
-        for(Player online : Bukkit.getOnlinePlayers())
-        PlayerUtils.updatePlayerHide(online);
+        for (Player online : Bukkit.getOnlinePlayers())
+            PlayerUtils.updatePlayerHide(online);
+
+        PlayerUtils.sendRessourcePack(p);
 
     /*   boolean noSpec = p.getGameMode() != GameMode.SPECTATOR;
         for (Player player : Bukkit.getOnlinePlayers())
@@ -82,6 +84,7 @@ public class JoinListener implements Listener {
     public void onLeave(PlayerQuitEvent e) {
         Player p = e.getPlayer();
         LGPlayer lgp = LGPlayer.thePlayer(p);
+        PlayerUtils.resetRessourcePack(p);
         if (lgp.getGame() != null) {
             lgp.leaveChat();
             if (lgp.getRole() != null && !lgp.isDead())

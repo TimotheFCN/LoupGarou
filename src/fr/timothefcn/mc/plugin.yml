@@ -8,3 +8,6 @@ commands:
   lg:
   create:
   join:
+  leave:
+    aliases: exit
+  bypass:

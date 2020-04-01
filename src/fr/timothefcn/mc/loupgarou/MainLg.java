@@ -58,6 +58,8 @@ public class MainLg extends JavaPlugin {
     //TODO: chaque partie créée doit entrer ici, chaque partie terminée doit être supprimée
     @Getter
     private ArrayList<String> badGuys = new ArrayList<>();
+    @Getter
+    private ArrayList<Player> bypass = new ArrayList<>();
 
     public static MainLg getInstance() {
         return instance;
@@ -74,10 +76,12 @@ public class MainLg extends JavaPlugin {
             config.set("ressourcePack", "http://leomelki.fr/mcgames/ressourcepacks/v32/loup_garou.zip");
             saveConfig();
         }
-       // loadConfig();
+        // loadConfig();
         Bukkit.getConsoleSender().sendMessage("LG by Timothé");
         getCommand("create").setExecutor(new LgCommands());
         getCommand("join").setExecutor(new LgCommands());
+        getCommand("bypass").setExecutor(new LgCommands());
+        getCommand("leave").setExecutor(new LgCommands());
         Bukkit.getPluginManager().registerEvents(new JoinListener(), this);
         Bukkit.getPluginManager().registerEvents(new CancelListener(), this);
         Bukkit.getPluginManager().registerEvents(new VoteListener(), this);

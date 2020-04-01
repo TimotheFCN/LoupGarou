@@ -1,9 +1,12 @@
 package fr.timothefcn.mc.loupgarou.listeners;
 
+import fr.timothefcn.mc.loupgarou.MainLg;
 import fr.timothefcn.mc.loupgarou.classes.LGPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
@@ -36,6 +39,18 @@ public class CancelListener implements Listener {
     @EventHandler
     public void onFood(FoodLevelChangeEvent e) {
         e.setFoodLevel(20);
+    }
+
+    @EventHandler
+    public void onBuild(BlockPlaceEvent e) {
+        if (MainLg.getInstance().getBypass().contains(e.getPlayer())) return;
+        else e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBreak(BlockBreakEvent e) {
+        if (MainLg.getInstance().getBypass().contains(e.getPlayer())) return;
+        else e.setCancelled(true);
     }
 
     @EventHandler

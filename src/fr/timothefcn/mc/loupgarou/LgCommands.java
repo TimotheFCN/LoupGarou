@@ -2,8 +2,10 @@ package fr.timothefcn.mc.loupgarou;
 
 import fr.timothefcn.mc.loupgarou.classes.LGGame;
 import fr.timothefcn.mc.loupgarou.classes.LGPlayer;
+import fr.timothefcn.mc.loupgarou.events.LGPlayerKilledEvent;
 import fr.timothefcn.mc.loupgarou.roles.Role;
 import fr.timothefcn.mc.loupgarou.utils.AutoRoles;
+import fr.timothefcn.mc.loupgarou.utils.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -18,12 +20,19 @@ public class LgCommands implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
-        if(command.getName().equalsIgnoreCase("create")) {
-            if(!(commandSender instanceof Player)){ commandSender.sendMessage("Cette commande doit être executée par un joueur");return true; }
-            Player p = (Player) commandSender;
-            if(args.length != 2 || Integer.parseInt(args[1]) > 12) {p.sendMessage(ChatColor.RED + "Utilisation: /create <nom de la partie> <nombre de joueurs>"); return true; }
+        if (!(commandSender instanceof Player)) {
+            commandSender.sendMessage("Cette commande doit être executée par un joueur");
+            return true;
+        }
+        Player p = (Player) commandSender;
+        LGPlayer lgp = LGPlayer.thePlayer(p);
+        if (command.getName().equalsIgnoreCase("create")) {
+            if (args.length != 2 || Integer.parseInt(args[1]) > 12) {
+                p.sendMessage(ChatColor.RED + "Utilisation: /create <nom de la partie> <nombre de joueurs>");
+                return true;
+            }
             String name = args[0].toLowerCase();
-            if(MainLg.getInstance().getAllGames().containsKey(name)) {
+            if (MainLg.getInstance().getAllGames().containsKey(name)) {
                 p.sendMessage(ChatColor.RED + "Une partie en cours existe déjà avec ce nom");
             }
             int nbPlayers = Integer.parseInt(args[1]);
@@ -38,16 +47,47 @@ public class LgCommands implements CommandExecutor {
             p.performCommand("join " + name);
         }
 
-        if(command.getName().equalsIgnoreCase("join")) {
-            if(!(commandSender instanceof Player)){ commandSender.sendMessage("Cette commande doit être executée par un joueur");return true; }
-            Player p = (Player) commandSender;
-            if(args.length != 1) {p.sendMessage(ChatColor.RED + "Utilisation: /join <nom de la partie>"); return true; }
-            if(MainLg.getInstance().getAllGames().containsKey(args[0])) {
-                if(LGPlayer.thePlayer(p).getGame() != null) {p.sendMessage(ChatColor.RED + "Tu es déjà en partie !"); return true; }
+        if (command.getName().equalsIgnoreCase("join")) {
+            if (args.length != 1) {
+                p.sendMessage(ChatColor.RED + "Utilisation: /join <nom de la partie>");
+                return true;
+            }
+            if (MainLg.getInstance().getAllGames().containsKey(args[0])) {
+                if (LGPlayer.thePlayer(p).getGame() != null) {
+                    p.sendMessage(ChatColor.RED + "Tu es déjà en partie !");
+                    return true;
+                }
                 Bukkit.getPluginManager().callEvent(new PlayerJoinEvent(p, ""));
                 LGPlayer.thePlayer(p).join(MainLg.getInstance().getAllGames().get(args[0]));
+            } else p.sendMessage(ChatColor.RED + "Cette partie n'existe pas.");
+        }
+
+        if (command.getName().equalsIgnoreCase("leave")) {
+            if (args.length != 0) {
+                p.sendMessage(ChatColor.RED + "Utilisation: /leave");
+                return true;
             }
-            else p.sendMessage(ChatColor.RED + "Cette partie n'existe pas.");
+            if (LGPlayer.thePlayer(p).getGame() != null) {
+                lgp.leaveChat();
+                if (lgp.getRole() != null && !lgp.isDead())
+                    lgp.getGame().kill(lgp, LGPlayerKilledEvent.Reason.DISCONNECTED, true);
+                lgp.getGame().getInGame().remove(lgp);
+                lgp.getGame().checkLeave();
+                LGPlayer.removePlayer(p);
+                lgp.remove();
+                PlayerUtils.resetPlayerState(p);
+                for (Player online : Bukkit.getOnlinePlayers()) {
+                    PlayerUtils.updatePlayerHide(online);
+                }
+            } else p.sendMessage(ChatColor.RED + "Tu n'es pas dans une partie");
+        }
+
+        if (command.getName().equalsIgnoreCase("bypass")) {
+            if (p.hasPermission("lg.build")) {
+                if (MainLg.getInstance().getBypass().contains(p))
+                    MainLg.getInstance().getBypass().remove(p);
+                else MainLg.getInstance().getBypass().add(p);
+            } else p.sendMessage(ChatColor.RED + "Tu n'as pas la permission d'executer cette commande");
         }
 
         return true;
