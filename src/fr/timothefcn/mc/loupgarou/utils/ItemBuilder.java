@@ -171,6 +171,18 @@ public class ItemBuilder {
     }
 
     /**
+     * set Custom model data
+     *
+     * @param data The lore to set it to.
+     */
+    public ItemBuilder setCustomModel(int data) {
+        ItemMeta im = is.getItemMeta();
+        im.setCustomModelData(data);
+        is.setItemMeta(im);
+        return this;
+    }
+
+    /**
      * Re-sets the lore.
      *
      * @param lore The lore to set it to.

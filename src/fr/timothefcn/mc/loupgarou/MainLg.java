@@ -59,6 +59,8 @@ public class MainLg extends JavaPlugin {
     private ArrayList<String> badGuys = new ArrayList<>();
     @Getter
     private ArrayList<Player> bypass = new ArrayList<>();
+    @Getter
+    private HashMap<String, Integer> rolesIconsID = new HashMap<>();
 
     public static MainLg getInstance() {
         return instance;
@@ -69,6 +71,7 @@ public class MainLg extends JavaPlugin {
         instance = this;
         loadRoles();
         setBadGuys();
+        setRoleIconID();
         if (!new File(getDataFolder(), "config.yml").exists()) {//Créer la config
             FileConfiguration config = getConfig();
             config.set("spawns", new ArrayList<List<Double>>());
@@ -432,5 +435,34 @@ public class MainLg extends JavaPlugin {
         badGuys.add(("GrandMechantLoup"));
         badGuys.add(("ChienLoup")); //TODO: implémenter ça correctement
         badGuys.add(("EnfantSauvage")); //TODO: implémenter ça correctement
+    }
+
+    private void setRoleIconID() {
+        rolesIconsID.put("LoupGarou", 1017);
+        rolesIconsID.put("LoupGarouNoir", 1019);
+        rolesIconsID.put("Garde", 1015);
+        rolesIconsID.put("Sorciere", 1026);
+        rolesIconsID.put("Voyante", 1030);
+        rolesIconsID.put("Chasseur", 1006);
+        rolesIconsID.put("Villageois", 1029);
+        rolesIconsID.put("Medium", 1020);
+        rolesIconsID.put("Dictateur", 1012);
+        rolesIconsID.put("Cupidon", 1010);
+        rolesIconsID.put("PetiteFille", 1022);
+        rolesIconsID.put("ChaperonRouge", 1005);
+        rolesIconsID.put("LoupGarouBlanc", 1018);
+        rolesIconsID.put("Bouffon", 1003);
+        rolesIconsID.put("Ange", 1001);
+        rolesIconsID.put("Survivant", 1027);
+        rolesIconsID.put("Assassin", 1002);
+        rolesIconsID.put("GrandMechantLoup", 1016);
+        rolesIconsID.put("Corbeau", 1009);
+        rolesIconsID.put("Detective", 1011);
+        rolesIconsID.put("ChienLoup", 1008);
+        rolesIconsID.put("Pirate", 1023);
+        rolesIconsID.put("Pyromane", 1025);
+        rolesIconsID.put("Pretre", 1024);
+        rolesIconsID.put("Faucheur", 1014);
+        rolesIconsID.put("EnfantSauvage", 1013);
     }
 }

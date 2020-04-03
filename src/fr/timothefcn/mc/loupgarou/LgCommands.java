@@ -4,12 +4,10 @@ import fr.timothefcn.mc.loupgarou.classes.LGGame;
 import fr.timothefcn.mc.loupgarou.classes.LGPlayer;
 import fr.timothefcn.mc.loupgarou.events.LGPlayerKilledEvent;
 import fr.timothefcn.mc.loupgarou.roles.Role;
-import fr.timothefcn.mc.loupgarou.utils.AutoRoles;
-import fr.timothefcn.mc.loupgarou.utils.InventoryUtils;
-import fr.timothefcn.mc.loupgarou.utils.PlayerUtils;
-import fr.timothefcn.mc.loupgarou.utils.VariousUtils;
+import fr.timothefcn.mc.loupgarou.utils.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -65,6 +63,8 @@ public class LgCommands implements CommandExecutor {
                 //Créer l'inventaire de séléction
                 p.performCommand("join " + name);
                 Inventory gui = InventoryUtils.roleSelector(LGPlayer.thePlayer(p).getGame());
+                p.getInventory().setItem(5, new ItemBuilder(Material.EMERALD).setName("Lancer la partie").build());
+                p.getInventory().setItem(3, new ItemBuilder(Material.MAGMA_CREAM).setName("Choisir les rôles").build());
                 p.openInventory(gui);
             } else {
                 p.sendMessage(ChatColor.RED + "Il faut choisir un mode de répartition des roles: auto ou custom");
@@ -107,6 +107,7 @@ public class LgCommands implements CommandExecutor {
                 lgp.remove();
 
                 if (!(game.getInGame().size() > 0)) VariousUtils.removeGame(game.getGameName());
+
                 PlayerUtils.resetPlayerState(p);
                 for (Player online : Bukkit.getOnlinePlayers()) {
                     PlayerUtils.updatePlayerHide(online);

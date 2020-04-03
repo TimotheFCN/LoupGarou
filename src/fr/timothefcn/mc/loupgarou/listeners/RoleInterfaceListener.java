@@ -8,6 +8,7 @@ import fr.timothefcn.mc.loupgarou.utils.InventoryUtils;
 import fr.timothefcn.mc.loupgarou.utils.ItemBuilder;
 import fr.timothefcn.mc.loupgarou.utils.RolesInstancer;
 import lombok.Getter;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -46,13 +47,13 @@ public class RoleInterfaceListener implements Listener {
             if (MainLg.getInstance().getConfig().getList("spawns").size() < LGPlayer.thePlayer(e.getPlayer()).getGame().getMaxPlayers()) {
                 broadcastMessage("§4Erreur : §cIl n'y a pas assez de points de spawn !");
             }
-            broadcastMessage("§aLa partie va démarrer !");
             LGPlayer.thePlayer(e.getPlayer()).getGame().updateStart();
         }
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
+        if (e.getCurrentItem() == null) return;
         Player p = (Player) e.getWhoClicked();
         if (e.getView().getTitle().equals("Rôles")) {
             if (LGPlayer.thePlayer(p).getGame() == null) return;
@@ -66,7 +67,7 @@ public class RoleInterfaceListener implements Listener {
 
             } else if (e.isLeftClick()) {
                 for (String role : getRoles().keySet()) {
-                    if (role.equals(e.getCurrentItem().getItemMeta().getDisplayName())) {
+                    if (role.equals(ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()))) {
                         if (role.equalsIgnoreCase("LoupGarou")) game.setWolves(game.getWolves() + 1);
                         else if (role.equalsIgnoreCase("Villageois")) game.setVillagers(game.getVillagers() + 1);
                         else if (!game.getRolestoconfig().contains(role)) game.getRolestoconfig().add(role);
@@ -77,7 +78,7 @@ public class RoleInterfaceListener implements Listener {
                 }
             } else if (e.isRightClick()) {
                 for (String role : getRoles().keySet()) {
-                    if (role.equals(e.getCurrentItem().getItemMeta().getDisplayName())) {
+                    if (role.equals(ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()))) {
                         if (role.equalsIgnoreCase("LoupGarou") && game.getWolves() > 0)
                             game.setWolves(game.getWolves() - 1);
                         else if (role.equalsIgnoreCase("Villageois") && game.getVillagers() > 0)

@@ -5,11 +5,13 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import fr.timothefcn.mc.loupgarou.MainLg;
+import fr.timothefcn.mc.loupgarou.classes.LGGame;
 import org.bukkit.Location;
 import org.bukkit.WorldBorder;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 
 public class VariousUtils {
     private static char[] hex = "0123456789abcdef".toCharArray();
@@ -50,6 +52,18 @@ public class VariousUtils {
 
     public static void removeGame(String game) {
         MainLg.getInstance().getAllGames().remove(game, MainLg.getInstance().getAllGames().get(game));
+        System.gc();
+    }
+
+    public static ArrayList<String> checkGameSettings(LGGame game) {
+        ArrayList<String> result = new ArrayList<>();
+        if (game.getWolves() < 1) result.add("La partie nécessite au moins un loup.");
+        if (game.getMaxPlayers() > 12) result.add("La partie peut accepter jusqu'à 12 joueurs.");
+        if (game.getMaxPlayers() < 3) result.add("La partie nécessite au moins 3 joueurs.");
+        if (game.getWolves() >= game.getMaxPlayers() - game.getWolves())
+            result.add("Il doit y avoir plus de membres du village que de loups.");
+
+        return result;
     }
 
 }

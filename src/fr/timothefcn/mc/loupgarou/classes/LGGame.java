@@ -17,10 +17,7 @@ import fr.timothefcn.mc.loupgarou.utils.PlayerUtils;
 import fr.timothefcn.mc.loupgarou.utils.VariousUtils;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -278,7 +275,7 @@ public class LGGame implements Listener {
             } else if (startingTask != null) {
                 startingTask.cancel();
                 broadcastMessage("§c§oLe démarrage de la partie a été annulé car une personne l'a quittée !");
-            }
+            } else broadcastMessage(ChatColor.RED + "Une erreur est survenue, vérifiez la configuration de la partie.");
     }
 
     public void start() {
@@ -654,6 +651,7 @@ public class LGGame implements Listener {
         VariousUtils.removeGame(gameName);
         for (LGPlayer lgp : getInGame())
             Bukkit.getPluginManager().callEvent(new PlayerQuitEvent(lgp.getPlayer(), ""));
+        System.gc();
     }
 
     public boolean mayorKilled() {
