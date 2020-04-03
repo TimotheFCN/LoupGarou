@@ -75,7 +75,7 @@ public class MainLg extends JavaPlugin {
         if (!new File(getDataFolder(), "config.yml").exists()) {//Créer la config
             FileConfiguration config = getConfig();
             config.set("spawns", new ArrayList<List<Double>>());
-            config.set("ressourcePack", "http://leomelki.fr/mcgames/ressourcepacks/v32/loup_garou.zip");
+            config.set("ressourcePack", "http://redoubler.fun/ressources/loup_garou.zip");
             saveConfig();
         }
         // loadConfig();
