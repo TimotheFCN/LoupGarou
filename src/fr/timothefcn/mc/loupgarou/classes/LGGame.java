@@ -276,7 +276,8 @@ public class LGGame implements Listener {
             } else if (startingTask != null) {
                 startingTask.cancel();
                 broadcastMessage("§c§oLe démarrage de la partie a été annulé car une personne l'a quittée !");
-            } else broadcastMessage(ChatColor.RED + "Une erreur est survenue, vérifiez la configuration de la partie.");
+            } else
+                broadcastMessage(ChatColor.RED + "Lancement impossible : Vérifiez que la configuration de la partie correspond au nombre de joueurs.");
     }
 
     public void start() {
