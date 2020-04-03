@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map.Entry;
 
 public class LGGame implements Listener {
-    private static boolean autoStart = false;
     @Getter
     private final SecureRandom random = new SecureRandom();
     @Getter
@@ -88,6 +87,8 @@ public class LGGame implements Listener {
     @Getter
     @Setter
     private int wolves;
+    @Setter
+    private boolean isAuto = false;
 
 
     public LGGame(Player owner, int maxPlayers, String gameName) {
@@ -228,7 +229,7 @@ public class LGGame implements Listener {
             obj.sendPacket(lgp.getPlayer());
 
             //Start game si full
-            if (maxPlayers == inGame.size()) {
+            if (maxPlayers == inGame.size() && isAuto) {
                 if (MainLg.getInstance().getConfig().getList("spawns").size() < lgp.getGame().getMaxPlayers()) {
                     broadcastMessage("§4Erreur : §cIl n'y a pas assez de points de spawn !");
                     return true;

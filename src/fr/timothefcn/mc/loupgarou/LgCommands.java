@@ -53,6 +53,7 @@ public class LgCommands implements CommandExecutor {
                     MainLg.getInstance().getAllGames().put(name, new LGGame(p, nbPlayers, name)); //Create game
                     ArrayList<Role> roles = AutoRoles.getRandomRoles(repartition[0], repartition[1], MainLg.getInstance().getAllGames().get(name));
                     MainLg.getInstance().getAllGames().get(name).setRoles(roles);
+                    MainLg.getInstance().getAllGames().get(name).setAuto(true);
                     p.performCommand("join " + name);
                 }
             }
