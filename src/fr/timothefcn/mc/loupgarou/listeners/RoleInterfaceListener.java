@@ -28,7 +28,6 @@ public class RoleInterfaceListener implements Listener {
     @Getter
     private HashMap<String, Constructor<? extends Role>> roles = MainLg.getInstance().getRoles();
 
-    //TODO: Permettre au créateur de la partie de modifier les roles après l'avoir créée
 
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {
@@ -61,7 +60,6 @@ public class RoleInterfaceListener implements Listener {
 
             if (e.getCurrentItem().getType() == Material.GOLD_NUGGET) {
                 p.closeInventory();
-                //TODO: ajouter les sécurités de répartition des roles
                 p.getInventory().setItem(5, new ItemBuilder(Material.EMERALD).setName("Lancer la partie").build());
                 p.getInventory().setItem(3, new ItemBuilder(Material.MAGMA_CREAM).setName("Choisir les rôles").build());
 

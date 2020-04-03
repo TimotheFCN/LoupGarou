@@ -54,7 +54,6 @@ public class MainLg extends JavaPlugin {
     private LGGame currentGame;//Because for now, only one game will be playable on one server (flemme)
     @Getter
     private HashBiMap<String, LGGame> allGames = HashBiMap.create();
-    //TODO: chaque partie créée doit entrer ici, chaque partie terminée doit être supprimée
     @Getter
     private ArrayList<String> badGuys = new ArrayList<>();
     @Getter
@@ -255,13 +254,13 @@ public class MainLg extends JavaPlugin {
                     sender.sendMessage("§7§oSi vous avez changé les rôles, écriver §8§o/lg joinall§7§o !");
                     //   loadConfig();
                     return true;
-                    //TODO: Désactiver cette commande
-                } else if (args[0].equalsIgnoreCase("joinall")) {
+
+                /*} else if (args[0].equalsIgnoreCase("joinall")) {
                     for (Player p : Bukkit.getOnlinePlayers())
                         Bukkit.getPluginManager().callEvent(new PlayerQuitEvent(p, "joinall"));
                     for (Player p : Bukkit.getOnlinePlayers())
                         Bukkit.getPluginManager().callEvent(new PlayerJoinEvent(p, "joinall"));
-                    return true;
+                    return true; */
                 } else if (args[0].equalsIgnoreCase("reloadPacks")) {
                     for (Player p : Bukkit.getOnlinePlayers())
                         Bukkit.getPluginManager().callEvent(new PlayerQuitEvent(p, "reloadPacks"));
@@ -381,7 +380,7 @@ public class MainLg extends JavaPlugin {
                 returnlist.add(s);
         return returnlist;
     }
-    //TODO: Config désactivée
+
  /*   public void loadConfig() {
         int players = 0;
         for (String role : roles.keySet())

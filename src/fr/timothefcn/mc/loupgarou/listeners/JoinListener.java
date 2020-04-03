@@ -21,7 +21,7 @@ import java.util.Arrays;
 public class JoinListener implements Listener {
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent e) { //TODO: Possiblement à modifier
+    public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
         if (!(p.getGameMode().equals(GameMode.SPECTATOR))) p.setGameMode(GameMode.ADVENTURE);
         LGPlayer.thePlayer(e.getPlayer()).setGame(null); //Au cas où un crash serveur

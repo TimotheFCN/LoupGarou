@@ -23,7 +23,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -308,7 +307,6 @@ public class LGGame implements Listener {
             lgp.getScoreboard().getLine(0).setDisplayName("§6Attribution des rôles...");
         }
 
-        //TODO: ne plus choisir les roles en fonction de la config
   /*      try {
             for (Entry<String, Constructor<? extends Role>> role : main.getRoles().entrySet())
                 if (main.getConfig().getInt("role." + role.getKey()) > 0)
@@ -623,20 +621,21 @@ public class LGGame implements Listener {
 
 
             Player p = lgp.getPlayer();
+            lgp.getGame().getInGame().remove(lgp);
             lgp.showView(); //TODO: Êviter doublon
             PlayerUtils.resetPlayerState(p);
             PlayerUtils.updatePlayerHide(p);
             //  PlayerUtils.resetRessourcePack(p);
         }
 
-        for (LGPlayer lgp : getInGame())
-            if (lgp.getPlayer().isOnline()) {
+        for (LGPlayer lgp : getInGame()) {
+            if (lgp.getPlayer().isOnline())
                 LGPlayer.removePlayer(lgp.getPlayer());
-                WrapperPlayServerScoreboardTeam team = new WrapperPlayServerScoreboardTeam();
-                team.setMode(1);
-                team.setName("you_are");
-                team.sendPacket(lgp.getPlayer());
-            }
+            WrapperPlayServerScoreboardTeam team = new WrapperPlayServerScoreboardTeam();
+            team.setMode(1);
+            team.setName("you_are");
+            team.sendPacket(lgp.getPlayer());
+        }
 	/*	wait(30, ()->{
 			for(LGPlayer lgp : getInGame())
 				if(lgp.getPlayer().isOnline()) {
@@ -651,8 +650,8 @@ public class LGGame implements Listener {
 		});*/
 
         VariousUtils.removeGame(gameName);
-        for (LGPlayer lgp : getInGame())
-            Bukkit.getPluginManager().callEvent(new PlayerQuitEvent(lgp.getPlayer(), ""));
+       /* for (LGPlayer lgp : getInGame())
+            Bukkit.getPluginManager().callEvent(new PlayerQuitEvent(lgp.getPlayer(), ""));  */
         System.gc();
     }
 
