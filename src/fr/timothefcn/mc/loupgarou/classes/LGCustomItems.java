@@ -55,7 +55,6 @@ public class LGCustomItems {
             sj.add(s);
         return mapps.get(sj.toString());
     }
-
     public static Material getItem(LGPlayer player) {
         return getItem(player, new ArrayList<String>());
     }
