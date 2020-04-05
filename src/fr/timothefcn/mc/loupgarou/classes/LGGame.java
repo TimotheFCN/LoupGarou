@@ -354,27 +354,18 @@ public class LGGame implements Listener {
         //Give roles...
         ArrayList<LGPlayer> toGive = (ArrayList<LGPlayer>) inGame.clone();
         started = false;
-        System.out.println("Roles à attribuer: " + getRoles().toString());
-        for (Role role : getRoles()) {
-            int waitedPlayers = 0;
-            for (int i = 0; i < getRoles().size(); i++) {
-                if (getRoles().get(i).getName().equalsIgnoreCase(role.getName())) waitedPlayers++;
-            }
-            System.out.println("Roles à attribuer: " + waitedPlayers);
-            //  System.out.println("Role à attribué:" + role);
-            while (waitedPlayers > 0) {
-                int randomized = random.nextInt(toGive.size() + 1);
-                LGPlayer player = toGive.remove(randomized - 1);
-                waitedPlayers--;
+        for (Role role : getRoles())
+            while (role.getWaitedPlayers() > 0) {
+                int randomized = random.nextInt(toGive.size());
+                LGPlayer player = toGive.remove(randomized);
                 role.join(player);
-                //   System.out.println("Role attribué à:" + player);
+                role.setWaitedPlayers(role.getWaitedPlayers() - 1);
                 WrapperPlayServerUpdateHealth update = new WrapperPlayServerUpdateHealth();
                 update.setFood(20);
                 update.setFoodSaturation(1);
                 update.setHealth(20);
                 update.sendPacket(player.getPlayer());
             }
-        }
         started = true;
 
         updateRoleScoreboard();
@@ -405,12 +396,14 @@ public class LGGame implements Listener {
         });
         for (int i = 0; i < roles.size(); i++) {
             IndexedRole role = roles.get(i);
+
             if (role.getNumber() == 0) {
                 for (LGPlayer lgp : getInGame())
                     lgp.getScoreboard().getLine(i).delete();
             } else
-                for (LGPlayer lgp : getInGame())
+                for (LGPlayer lgp : getInGame()) {
                     lgp.getScoreboard().getLine(i).setDisplayName("§e" + role.getNumber() + " §6- §e" + role.getRole().getName().replace("§l", ""));
+                }
         }
         for (int i = 15; i >= roles.size(); i--)
             for (LGPlayer lgp : getInGame())

@@ -5,6 +5,7 @@ import fr.timothefcn.mc.loupgarou.classes.LGCustomItems;
 import fr.timothefcn.mc.loupgarou.classes.LGGame;
 import fr.timothefcn.mc.loupgarou.classes.LGPlayer;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
@@ -19,6 +20,9 @@ public abstract class Role implements Listener {
       private int waitedPlayers; */
     @Getter
     private ArrayList<LGPlayer> players = new ArrayList<>();
+    @Getter
+    @Setter
+    private int waitedPlayers = 1;
 
     public Role(LGGame game) {
         this.game = game;
@@ -90,7 +94,6 @@ public abstract class Role implements Listener {
     }
 
     public void join(LGPlayer player, boolean sendMessage) {
-        System.out.println(player.getName() + " est " + getName());
         players.add(player);
         if (player.getRole() == null)
             player.setRole(this);

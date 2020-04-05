@@ -15,13 +15,18 @@ public class RolesInstancer {
         try {
             //ajout des roles
             for (String role : game.getRolestoconfig()) roleSelection.add(main.getRoles().get(role).newInstance(game));
-            for (int i = 1; i <= game.getVillagers(); i++)
-                roleSelection.add(main.getRoles().get("Villageois").newInstance(game));
-            for (int i = 1; i <= game.getWolves(); i++)
-                roleSelection.add(main.getRoles().get("LoupGarou").newInstance(game));
+            //
+            Role villager = main.getRoles().get("Villageois").newInstance(game);
+            villager.setWaitedPlayers(game.getVillagers());
+            roleSelection.add(villager);
+            //
+            Role loup = main.getRoles().get("LoupGarou").newInstance(game);
+            loup.setWaitedPlayers(game.getWolves());
+            roleSelection.add(loup);
         } catch (Exception err) {
             Bukkit.broadcastMessage("§4§lUne erreur est survenue lors de la création des roles... Regardez la console !");
             err.printStackTrace();
         }
+        game.setRoles(roleSelection);
     }
 }

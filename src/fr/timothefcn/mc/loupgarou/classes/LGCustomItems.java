@@ -42,6 +42,7 @@ public class LGCustomItems {
         return mappings.get(role.getClass()).get("");
     }
 
+    //TODO: Résoudre problème avec les icons
     public static Material getItem(LGPlayer player, ArrayList<String> constraints) {
         Bukkit.getPluginManager().callEvent(new LGCustomItemChangeEvent(player.getGame(), player, constraints));
 
@@ -54,7 +55,6 @@ public class LGCustomItems {
             sj.add(s);
         return mapps.get(sj.toString());
     }
-
     public static Material getItem(LGPlayer player) {
         return getItem(player, new ArrayList<String>());
     }
@@ -70,7 +70,7 @@ public class LGCustomItems {
     }
 
     @RequiredArgsConstructor
-    public enum LGCustomItemsConstraints {
+    public static enum LGCustomItemsConstraints {
         INFECTED("infecte"),
         MAYOR("maire"),
         DEAD("mort");

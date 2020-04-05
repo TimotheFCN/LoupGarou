@@ -11,6 +11,8 @@ import java.util.*;
 public class AutoRoles {
     static MainLg main = MainLg.getInstance();
 
+    //TODO: Meilleure repartition des roles (pack classique, etc)
+    //TODO: plusieurs villageois
 
     //Tableau [loups,village]
     public static int[] Repartition(int nbplayers) {
@@ -58,7 +60,7 @@ public class AutoRoles {
 
         ArrayList<Role> roleSelection = new ArrayList<>();
         //Ajout du village
-        List<Boolean> randomRoles = getRandomList(nbvillagers, 26 - main.getBadGuys().size() - nbvillagers);
+        List<Boolean> randomRoles = getRandomList(nbvillagers, main.getRoles().size() - main.getBadGuys().size() - nbvillagers);
         try {
             int index = 0;
             //System.out.println("Random: " + randomRoles.toString());
@@ -81,7 +83,9 @@ public class AutoRoles {
         //Ajout des loups
         //TODO: Ajouter autres types de loups (noir et blanc pour l'instant)
         try {
-            for (int i = 0; i < nbwolves; i++) roleSelection.add(main.getRoles().get("LoupGarou").newInstance(game));
+            Role loup = main.getRoles().get("LoupGarou").newInstance(game);
+            roleSelection.add(loup);
+            loup.setWaitedPlayers(nbwolves);
             if (lgnoir) roleSelection.add(main.getRoles().get("LoupGarouNoir").newInstance(game));
             if (lgblanc) roleSelection.add(main.getRoles().get("LoupGarouBlanc").newInstance(game));
         } catch (Exception err) {
