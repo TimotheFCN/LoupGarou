@@ -2,6 +2,7 @@ package fr.timothefcn.mc.loupgarou;
 
 import fr.timothefcn.mc.loupgarou.classes.LGGame;
 import fr.timothefcn.mc.loupgarou.classes.LGPlayer;
+import fr.timothefcn.mc.loupgarou.classes.LGWinType;
 import fr.timothefcn.mc.loupgarou.events.LGPlayerKilledEvent;
 import fr.timothefcn.mc.loupgarou.roles.Role;
 import fr.timothefcn.mc.loupgarou.utils.*;
@@ -101,13 +102,16 @@ public class LgCommands implements CommandExecutor {
                 LGGame game = LGPlayer.thePlayer(p).getGame();
                 lgp.leaveChat();
                 if (lgp.getRole() != null && !lgp.isDead())
-                    lgp.getGame().kill(lgp, LGPlayerKilledEvent.Reason.DISCONNECTED, true);
+                    lgp.getGame().kill(lgp, LGPlayerKilledEvent.Reason.DISCONNECTED, false);
                 lgp.getGame().getInGame().remove(lgp);
                 lgp.getGame().checkLeave();
                 LGPlayer.removePlayer(p);
                 lgp.remove();
 
-                if (!(game.getInGame().size() > 0)) VariousUtils.removeGame(game.getGameName());
+                if (!(game.getInGame().size() > 0)) {
+                    game.endGame(LGWinType.EQUAL);
+                    VariousUtils.removeGame(game.getGameName());
+                }
 
                 PlayerUtils.resetPlayerState(p);
                 for (Player online : Bukkit.getOnlinePlayers()) {

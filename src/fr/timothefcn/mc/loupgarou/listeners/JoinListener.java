@@ -88,7 +88,7 @@ public class JoinListener implements Listener {
         if (lgp.getGame() != null) {
             lgp.leaveChat();
             if (lgp.getRole() != null && !lgp.isDead())
-                lgp.getGame().kill(lgp, Reason.DISCONNECTED, true);
+                lgp.getGame().kill(lgp, Reason.DISCONNECTED, false);
             lgp.getGame().getInGame().remove(lgp);
             lgp.getGame().checkLeave();
         }
