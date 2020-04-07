@@ -4,6 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers;
+import fr.timothefcn.mc.com.comphenix.packetwrapper.WrapperPlayServerEntityDestroy;
 import fr.timothefcn.mc.loupgarou.MainLg;
 import fr.timothefcn.mc.loupgarou.classes.LGGame;
 import org.bukkit.Location;
@@ -64,6 +65,26 @@ public class VariousUtils {
             result.add("Il doit y avoir plus de membres du village que de loups.");
 
         return result;
+    }
+
+    public static void clearvotes(Player player, LGGame game) {
+        WrapperPlayServerEntityDestroy destroy = new WrapperPlayServerEntityDestroy();
+        destroy.setEntityIds(new int[]{Integer.MIN_VALUE + player.getEntityId()});
+        int[] ids = new int[game.getInGame().size() + 1];
+        for (int i = 0; i < game.getInGame().size(); i++) {
+            Player l = game.getInGame().get(i).getPlayer();
+            if (l == null)
+                continue;
+            ids[i] = Integer.MIN_VALUE + l.getEntityId();
+            destroy.sendPacket(l);
+        }
+
+        ids[ids.length - 1] = -player.getEntityId();// Clear voting
+
+        destroy = new WrapperPlayServerEntityDestroy();
+        destroy.setEntityIds(ids);
+        destroy.sendPacket(player);
+
     }
 
 }

@@ -15,6 +15,7 @@ public class PlayerUtils {
         p.setFoodLevel(20);
         p.setTotalExperience(0);
         p.getInventory().clear();
+        LGPlayer.thePlayer(p).setScoreboard(null);
         VariousUtils.setWarning(p, false);
         for (PotionEffect effect : p.getActivePotionEffects())
             p.removePotionEffect(effect.getType());

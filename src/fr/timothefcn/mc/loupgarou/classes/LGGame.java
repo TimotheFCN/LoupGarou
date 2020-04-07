@@ -202,26 +202,7 @@ public class LGGame implements Listener {
 
             Player player = lgp.getPlayer();
 
-            // Clear votes
-
-            WrapperPlayServerEntityDestroy destroy = new WrapperPlayServerEntityDestroy();
-            destroy.setEntityIds(new int[]{Integer.MIN_VALUE + player.getEntityId()});
-            int[] ids = new int[getInGame().size() + 1];
-            for (int i = 0; i < getInGame().size(); i++) {
-                Player l = getInGame().get(i).getPlayer();
-                if (l == null)
-                    continue;
-                ids[i] = Integer.MIN_VALUE + l.getEntityId();
-                destroy.sendPacket(l);
-            }
-
-            ids[ids.length - 1] = -player.getEntityId();// Clear voting
-
-            destroy = new WrapperPlayServerEntityDestroy();
-            destroy.setEntityIds(ids);
-            destroy.sendPacket(player);
-
-            // End clear votes/voting
+            VariousUtils.clearvotes(player, this);
 
             player.getInventory().clear();
             player.updateInventory();
@@ -554,6 +535,9 @@ public class LGGame implements Listener {
                     infos.add(new PlayerInfoData(new WrappedGameProfile(lgp.getPlayer().getUniqueId(), lgp.getName()), 0, NativeGameMode.ADVENTURE, WrappedChatComponent.fromText(lgp.getName())));
                     info.setData(infos);
                     info.sendPacket(lgp.getPlayer());
+                    VariousUtils.clearvotes(lgp.getPlayer(), this);
+                    lgp.updateSkin();
+                    lgp.updateOwnSkin();
                 } else
                     lgp.getPlayer().hidePlayer(killed.getPlayer());
 

@@ -100,19 +100,24 @@ public class LgCommands implements CommandExecutor {
             }
             if (LGPlayer.thePlayer(p).getGame() != null) {
                 LGGame game = LGPlayer.thePlayer(p).getGame();
-                lgp.leaveChat();
                 if (lgp.getRole() != null && !lgp.isDead())
                     lgp.getGame().kill(lgp, LGPlayerKilledEvent.Reason.DISCONNECTED, false);
+
                 lgp.getGame().getInGame().remove(lgp);
                 lgp.getGame().checkLeave();
-                LGPlayer.removePlayer(p);
-                lgp.remove();
 
                 if (!(game.getInGame().size() > 0)) {
                     game.endGame(LGWinType.EQUAL);
                     VariousUtils.removeGame(game.getGameName());
                 }
 
+                lgp.leaveChat();
+                LGPlayer.removePlayer(p);
+                lgp.remove();
+                lgp.setScoreboard(null);
+                VariousUtils.clearvotes(p, game);
+                lgp.updateSkin();
+                lgp.updateOwnSkin();
                 PlayerUtils.resetPlayerState(p);
                 for (Player online : Bukkit.getOnlinePlayers()) {
                     PlayerUtils.updatePlayerHide(online);
