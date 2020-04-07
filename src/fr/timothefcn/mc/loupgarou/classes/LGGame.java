@@ -200,9 +200,32 @@ public class LGGame implements Listener {
             if (lgp.isMuted())
                 lgp.resetMuted();
 
-            lgp.getPlayer().getInventory().clear();
-            lgp.getPlayer().updateInventory();
-            lgp.getPlayer().closeInventory();
+            Player player = lgp.getPlayer();
+
+            // Clear votes
+
+            WrapperPlayServerEntityDestroy destroy = new WrapperPlayServerEntityDestroy();
+            destroy.setEntityIds(new int[]{Integer.MIN_VALUE + player.getEntityId()});
+            int[] ids = new int[getInGame().size() + 1];
+            for (int i = 0; i < getInGame().size(); i++) {
+                Player l = getInGame().get(i).getPlayer();
+                if (l == null)
+                    continue;
+                ids[i] = Integer.MIN_VALUE + l.getEntityId();
+                destroy.sendPacket(l);
+            }
+
+            ids[ids.length - 1] = -player.getEntityId();// Clear voting
+
+            destroy = new WrapperPlayServerEntityDestroy();
+            destroy.setEntityIds(ids);
+            destroy.sendPacket(player);
+
+            // End clear votes/voting
+
+            player.getInventory().clear();
+            player.updateInventory();
+            player.closeInventory();
 
             lgp.joinChat(dayChat);
 
