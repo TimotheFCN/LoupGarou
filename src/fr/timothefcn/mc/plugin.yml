@@ -5,9 +5,8 @@ main: fr.timothefcn.mc.loupgarou.MainLg
 depend: [ProtocolLib]
 api-version: 1.13
 commands:
-  lg:
+  admin:
   create:
   join:
   leave:
     aliases: exit
-  bypass:

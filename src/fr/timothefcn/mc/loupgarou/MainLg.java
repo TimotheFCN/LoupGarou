@@ -19,6 +19,7 @@ import fr.timothefcn.mc.loupgarou.events.LGSkinLoadEvent;
 import fr.timothefcn.mc.loupgarou.events.LGUpdatePrefixEvent;
 import fr.timothefcn.mc.loupgarou.listeners.*;
 import fr.timothefcn.mc.loupgarou.roles.*;
+import fr.timothefcn.mc.loupgarou.utils.PlayerUtils;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.*;
@@ -27,7 +28,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONObject;
@@ -81,7 +81,6 @@ public class MainLg extends JavaPlugin {
         Bukkit.getConsoleSender().sendMessage("LG by Timothé");
         getCommand("create").setExecutor(new LgCommands());
         getCommand("join").setExecutor(new LgCommands());
-        getCommand("bypass").setExecutor(new LgCommands());
         getCommand("leave").setExecutor(new LgCommands());
         Bukkit.getPluginManager().registerEvents(new JoinListener(), this);
         Bukkit.getPluginManager().registerEvents(new CancelListener(), this);
@@ -192,7 +191,7 @@ public class MainLg extends JavaPlugin {
     @SuppressWarnings("unchecked")
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (label.equalsIgnoreCase("lg")) {
+        if (label.equalsIgnoreCase("admin")) {
             if (!sender.hasPermission("loupgarou.admin")) {
                 sender.sendMessage(prefix + "§4Erreur: Vous n'avez pas la permission...");
                 return true;
@@ -226,7 +225,7 @@ public class MainLg extends JavaPlugin {
                     game.endGame(LGWinType.EQUAL);
                     game.broadcastMessage("§cLa partie a été arrêtée de force !");
                     return true;
-                } else if (args[0].equalsIgnoreCase("start")) {
+                /*} else if (args[0].equalsIgnoreCase("start")) {
                     if (args.length < 2) {
                         sender.sendMessage("§4Utilisation : §c/lg start <pseudo>");
                         return true;
@@ -248,13 +247,12 @@ public class MainLg extends JavaPlugin {
                     }
                     sender.sendMessage("§aVous avez bien démarré une nouvelle partie !");
                     lgp.getGame().updateStart();
-                    return true;
-                } else if (args[0].equalsIgnoreCase("reloadconfig")) {
+                    return true; */
+               /* } else if (args[0].equalsIgnoreCase("reloadconfig")) {
                     sender.sendMessage("§aVous avez bien reload la config !");
                     sender.sendMessage("§7§oSi vous avez changé les rôles, écriver §8§o/lg joinall§7§o !");
                     //   loadConfig();
-                    return true;
-
+                    return true; */
                 /*} else if (args[0].equalsIgnoreCase("joinall")) {
                     for (Player p : Bukkit.getOnlinePlayers())
                         Bukkit.getPluginManager().callEvent(new PlayerQuitEvent(p, "joinall"));
@@ -262,12 +260,18 @@ public class MainLg extends JavaPlugin {
                         Bukkit.getPluginManager().callEvent(new PlayerJoinEvent(p, "joinall"));
                     return true; */
                 } else if (args[0].equalsIgnoreCase("reloadPacks")) {
-                    for (Player p : Bukkit.getOnlinePlayers())
-                        Bukkit.getPluginManager().callEvent(new PlayerQuitEvent(p, "reloadPacks"));
-                    for (Player p : Bukkit.getOnlinePlayers())
-                        Bukkit.getPluginManager().callEvent(new PlayerJoinEvent(p, "reloadPacks"));
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        PlayerUtils.resetRessourcePack(p);
+                    }
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(Bukkit.getPluginManager().getPlugin("LoupGarou"), new Runnable() {
+                        @Override
+                        public void run() {
+                            for (Player p : Bukkit.getOnlinePlayers())
+                                PlayerUtils.sendRessourcePack(p);
+                        }
+                    }, 60);
                     return true;
-                } else if (args[0].equalsIgnoreCase("nextNight")) {
+                /*} else if (args[0].equalsIgnoreCase("nextNight")) {
                     sender.sendMessage("§aVous êtes passé à la prochaine nuit");
                     if (sender instanceof Player && thePlayer((Player) sender).getGame() != null) {
                         LGGame playergame = LGPlayer.thePlayer((Player) sender).getGame();
@@ -277,8 +281,8 @@ public class MainLg extends JavaPlugin {
                         playergame.cancelWait();
                         playergame.nextNight();
                     }
-                    return true;
-                } else if (args[0].equalsIgnoreCase("nextDay")) {
+                    return true; */
+                /*} else if (args[0].equalsIgnoreCase("nextDay")) {
                     sender.sendMessage("§aVous êtes passé à la prochaine journée");
                     if (sender instanceof Player && thePlayer((Player) sender).getGame() != null) {
                         LGGame playergame = LGPlayer.thePlayer((Player) sender).getGame();
@@ -288,65 +292,33 @@ public class MainLg extends JavaPlugin {
                             lgp.stopChoosing();
                         playergame.endNight();
                     }
+                    return true; */
+                } else if (args[0].equalsIgnoreCase("countGames")) {
+                    int games = MainLg.getInstance().allGames.size();
+                    sender.sendMessage(ChatColor.RED + "Il y a " + games + " partie(s) lancée(s) !");
                     return true;
-                } else if (args[0].equalsIgnoreCase("roles")) {
-                    if (args.length == 1 || args[1].equalsIgnoreCase("list")) {
-                        sender.sendMessage(prefix + "§6Voici la liste des rôles:");
-                        int index = 0;
-                        for (String role : getRoles().keySet())
-                            sender.sendMessage(prefix + "  §e- " + index++ + " - §6" + role + " §e> " + MainLg.getInstance().getConfig().getInt("role." + role));
-                        sender.sendMessage("\n" + prefix + " §7Écrivez §8§o/lg roles set <role_id/role_name> <nombre>§7 pour définir le nombre de joueurs qui devrons avoir ce rôle.");
-                    } else {
-                        if (args[1].equalsIgnoreCase("set") && args.length == 4) {
-                            String role = null;
-                            if (args[2].length() <= 2)
-                                try {
-                                    Integer i = Integer.valueOf(args[2]);
-                                    Object[] array = getRoles().keySet().toArray();
-                                    if (array.length <= i) {
-                                        sender.sendMessage(prefix + "§4Erreur: §cCe rôle n'existe pas.");
-                                        return true;
-                                    } else
-                                        role = (String) array[i];
-                                } catch (Exception err) {
-                                    sender.sendMessage(prefix + "§4Erreur: §cCeci n'est pas un nombre");
-                                }
-                            else
-                                role = args[2];
-
-                            if (role != null) {
-                                String real_role = null;
-                                for (String real : getRoles().keySet())
-                                    if (real.equalsIgnoreCase(role)) {
-                                        real_role = real;
-                                        break;
-                                    }
-
-                                if (real_role != null) {
-                                    try {
-                                        MainLg.getInstance().getConfig().set("role." + real_role, Integer.valueOf(args[3]));
-                                        sender.sendMessage(prefix + "§6Il y aura §e" + args[3] + " §6" + real_role);
-                                        saveConfig();
-                                        //    loadConfig();
-                                        sender.sendMessage("§7§oSi vous avez fini de changer les rôles, écriver §8§o/lg joinall§7§o !");
-                                    } catch (Exception err) {
-                                        sender.sendMessage(prefix + "§4Erreur: §c" + args[3] + " n'est pas un nombre");
-                                    }
-                                    return true;
-                                }
-                            }
-                            sender.sendMessage(prefix + "§4Erreur: §cLe rôle que vous avez entré est incorrect");
-
-                        } else {
-                            sender.sendMessage(prefix + "§4Erreur: §cCommande incorrecte.");
-                            sender.sendMessage(prefix + "§4Essayez §c/lg roles set <role_id/role_name> <nombre>§4 ou §c/lg roles list");
+                } else if (args[0].equalsIgnoreCase("broadcast")) {
+                    if (args.length > 1) {
+                        String message = "";
+                        for (int i = 1; i < args.length; i++) {
+                            message = message + " " + args[i];
                         }
-                    }
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            p.sendMessage(ChatColor.RED + "[Annonce]" + ChatColor.GOLD + message);
+                        }
+                    } else sender.sendMessage("Utilisation: /admin broadcast <le message à envoyer> ");
+                    return true;
+                } else if (args[0].equalsIgnoreCase("bypass")) {
+                    if (sender.hasPermission("lg.build") && sender instanceof Player) {
+                        if (MainLg.getInstance().getBypass().contains(sender))
+                            MainLg.getInstance().getBypass().remove(sender);
+                        else MainLg.getInstance().getBypass().add((Player) sender);
+                    } else sender.sendMessage(ChatColor.RED + "Tu n'as pas la permission d'executer cette commande");
                     return true;
                 }
             }
             sender.sendMessage(prefix + "§4Erreur: §cCommande incorrecte.");
-            sender.sendMessage(prefix + "§4Essayez /lg §caddSpawn/end/start/nextNight/nextDay/reloadConfig/roles/reloadPacks/joinAll");
+            sender.sendMessage(prefix + "§4Essayez /admin §caddSpawn/end/reloadPacks/bypass/countGames/broadcast");
             return true;
         }
         return false;
@@ -366,7 +338,7 @@ public class MainLg extends JavaPlugin {
                 else if (args.length == 4)
                     return Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
         } else if (args.length == 1)
-            return getStartingList(args[0], "addSpawn", "end", "start", "nextNight", "nextDay", "reloadConfig", "roles", "joinAll", "reloadPacks");
+            return getStartingList(args[0], "bypass", "broadcast", "countGames", "addSpawn", "end", "reloadPacks");
         return new ArrayList<String>(0);
     }
 

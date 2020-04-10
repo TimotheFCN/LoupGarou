@@ -7,6 +7,7 @@ import fr.timothefcn.mc.loupgarou.roles.Role;
 import fr.timothefcn.mc.loupgarou.utils.InventoryUtils;
 import fr.timothefcn.mc.loupgarou.utils.ItemBuilder;
 import fr.timothefcn.mc.loupgarou.utils.RolesInstancer;
+import fr.timothefcn.mc.loupgarou.utils.VariousUtils;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -46,7 +47,9 @@ public class RoleInterfaceListener implements Listener {
             if (MainLg.getInstance().getConfig().getList("spawns").size() < LGPlayer.thePlayer(e.getPlayer()).getGame().getMaxPlayers()) {
                 broadcastMessage("§4Erreur : §cIl n'y a pas assez de points de spawn !");
             }
-            LGPlayer.thePlayer(e.getPlayer()).getGame().updateStart();
+            if (VariousUtils.checkGameSettings(LGPlayer.thePlayer(e.getPlayer()).getGame()).size() == 0)
+                LGPlayer.thePlayer(e.getPlayer()).getGame().updateStart();
+            else e.getPlayer().sendMessage(ChatColor.RED + "La configuration de la partie est incorrecte.");
         }
     }
 
@@ -90,4 +93,20 @@ public class RoleInterfaceListener implements Listener {
             }
         }
     }
+
+   /* @EventHandler
+    public void onInventoryClose(InventoryCloseEvent e) {
+        if (e.getInventory().contains(Material.HEART_OF_THE_SEA)) {
+            Player player = (Player) e.getPlayer();
+            if (e.getInventory().contains(Material.IRON_NUGGET))
+                Bukkit.getScheduler().scheduleSyncDelayedTask(MainLg.getInstance(), new Runnable() {
+                    @Override
+                    public void run() {
+                        if (player.getOpenInventory() != null)
+                            player.openInventory(InventoryUtils.roleSelector(LGPlayer.thePlayer(player).getGame()));
+                    }
+                }, 2);
+        }
+        ;
+    } */
 }

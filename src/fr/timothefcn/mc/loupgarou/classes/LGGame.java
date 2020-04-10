@@ -253,6 +253,13 @@ public class LGGame implements Listener {
             startingTask = null;
             broadcastMessage("§c§oUn joueur s'est déconnecté. Le décompte de lancement a donc été arrêté.");
         }
+        if (!started) {
+            if (!getInGame().contains(LGPlayer.thePlayer(owner))) {
+                broadcastMessage(ChatColor.RED + "Le créateur de la partie s'est déconnecté.");
+                endGame(LGWinType.NONE);
+                VariousUtils.removeGame(getGameName());
+            }
+        }
     }
 
     public void updateStart() {
@@ -621,7 +628,6 @@ public class LGGame implements Listener {
 
 
             Player p = lgp.getPlayer();
-            lgp.getGame().getInGame().remove(lgp);
             lgp.showView(); //TODO: Êviter doublon
             PlayerUtils.resetPlayerState(p);
             PlayerUtils.updatePlayerHide(p);
@@ -636,6 +642,7 @@ public class LGGame implements Listener {
             team.setName("you_are");
             team.sendPacket(lgp.getPlayer());
         }
+        this.getInGame().clear();
 	/*	wait(30, ()->{
 			for(LGPlayer lgp : getInGame())
 				if(lgp.getPlayer().isOnline()) {

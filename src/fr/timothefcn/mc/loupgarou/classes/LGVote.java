@@ -102,7 +102,8 @@ public class LGVote {
         for (LGPlayer lgp : viewers)
             showVoting(lgp, null);
         for (LGPlayer lgp : votes.keySet())
-            updateVotes(lgp, true);
+            if (lgp != null)
+                updateVotes(lgp, true);
         int max = 0;
         boolean equal = false;
         for (Entry<LGPlayer, List<LGPlayer>> entry : votes.entrySet())
@@ -283,6 +284,7 @@ public class LGVote {
     }
 
     private void updateVotes(LGPlayer voted, boolean kill) {
+        if (voted.getPlayer() == null) return;
         int entityId = Integer.MIN_VALUE + voted.getPlayer().getEntityId();
         WrapperPlayServerEntityDestroy destroy = new WrapperPlayServerEntityDestroy();
         destroy.setEntityIds(new int[]{entityId});

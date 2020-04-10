@@ -107,17 +107,16 @@ public class LgCommands implements CommandExecutor {
                 lgp.getGame().checkLeave();
 
                 if (!(game.getInGame().size() > 0)) {
-                    game.endGame(LGWinType.EQUAL);
+                    game.endGame(LGWinType.NONE);
                     VariousUtils.removeGame(game.getGameName());
                 }
-
                 lgp.leaveChat();
-                LGPlayer.removePlayer(p);
-                lgp.remove();
                 lgp.setScoreboard(null);
                 VariousUtils.clearvotes(p, game);
                 lgp.updateSkin();
                 lgp.updateOwnSkin();
+                LGPlayer.removePlayer(p);
+                lgp.remove();
                 PlayerUtils.resetPlayerState(p);
                 for (Player online : Bukkit.getOnlinePlayers()) {
                     PlayerUtils.updatePlayerHide(online);
@@ -125,15 +124,6 @@ public class LgCommands implements CommandExecutor {
                 p.sendMessage(ChatColor.RED + "Tu as quitté ta partie");
             } else p.sendMessage(ChatColor.RED + "Tu n'es pas dans une partie");
         }
-
-        if (command.getName().equalsIgnoreCase("bypass")) {
-            if (p.hasPermission("lg.build")) {
-                if (MainLg.getInstance().getBypass().contains(p))
-                    MainLg.getInstance().getBypass().remove(p);
-                else MainLg.getInstance().getBypass().add(p);
-            } else p.sendMessage(ChatColor.RED + "Tu n'as pas la permission d'executer cette commande");
-        }
-
         return true;
     }
 }

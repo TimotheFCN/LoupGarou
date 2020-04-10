@@ -101,6 +101,7 @@ public class LGPlayer {
 
             if (scoreboard != null)
                 scoreboard.show();
+            else new CustomScoreboard("null", this).hide();
         }
     }
 
@@ -278,8 +279,10 @@ public class LGPlayer {
 
                 @Override
                 public void run() {
-                    getPlayer().updateInventory();
-                    getPlayer().setWalkSpeed(speed);
+                    if (getPlayer() != null) {
+                        getPlayer().updateInventory();
+                        getPlayer().setWalkSpeed(speed);
+                    }
                 }
             }.runTaskLater(MainLg.getInstance(), 5);
             //Et c'est bon, le joueur se voit avec un nouveau skin avec quasiment aucun problème visible à l'écran :D
